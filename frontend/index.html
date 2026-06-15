@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/leaf.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO -->
+    <title>EcoMentor AI — Personal AI Sustainability Coach</title>
+    <meta name="description" content="EcoMentor AI uses Claude's agentic tool-calling to calculate your carbon footprint, generate personalized eco-challenges, and track your sustainability journey — grounded in India's real data." />
+    <meta name="keywords" content="carbon footprint, sustainability, AI coach, eco-friendly, India, climate change, Claude AI, agentic AI" />
+    <meta name="author" content="EcoMentor AI" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="EcoMentor AI — Personal AI Sustainability Coach" />
+    <meta property="og:description" content="Claude AI-powered carbon footprint calculator with true agentic tool-calling. Built for India's context with IPCC 2023 & CEA 2023 data." />
+    <meta property="og:url" content="https://ecomentor-ai.vercel.app" />
+    <meta property="og:site_name" content="EcoMentor AI" />
+    <meta property="og:image" content="https://ecomentor-ai.vercel.app/og-preview.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="EcoMentor AI — AI Sustainability Coach" />
+    <meta name="twitter:description" content="Track your carbon footprint with Claude AI's agentic tool-calling. India-specific, data-grounded sustainability coaching." />
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#0D1117" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Performance hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+
+    <style>
+      /* Skip navigation link — visually hidden, visible on focus (WCAG 2.4.1) */
+      .skip-nav {
+        position: absolute;
+        top: -100%;
+        left: 0;
+        background: #3FB950;
+        color: #0D1117;
+        padding: 0.75rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        z-index: 9999;
+        border-radius: 0 0 8px 0;
+        text-decoration: none;
+        transition: top 0.15s;
+      }
+      .skip-nav:focus {
+        top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-nav">Skip to main content</a>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
