@@ -18,7 +18,7 @@ const COLORS = ['#3FB950', '#26a641', '#58A6FF', '#3FB95066', '#58A6FF44']
 export default function ParticleBackground({ count = 25 }: { count?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<Particle[]>([])
-  const rafRef = useRef<number>()
+  const rafRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     const canvas = canvasRef.current

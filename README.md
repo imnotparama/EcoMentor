@@ -101,7 +101,7 @@ graph TB
 ### 1. Clone & Configure
 
 ```bash
-git clone https://github.com/your-repo/EcoMentor
+git clone https://github.com/imnotparama/EcoMentor
 cd EcoMentor
 
 # Backend config
@@ -253,7 +253,7 @@ pytest tests/ -v
 2. Set root directory: `frontend`
 3. Build command: `npm run build`
 4. Output directory: `dist`
-5. Add env var: `VITE_API_BASE_URL=https://your-backend.onrender.com`
+5. Add env var: `VITE_API_BASE_URL=https://ecomentor-ai.onrender.com`
 
 ### Backend → Render
 1. Connect repo to [Render](https://render.com)
