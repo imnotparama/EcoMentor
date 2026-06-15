@@ -245,13 +245,13 @@ async def _run_ai_analysis_background(user_id: int, assessment_id: int) -> None:
     from database import SessionLocal
     from services.ai_agent import generate_assessment_recommendations
 
-    if not settings.ANTHROPIC_API_KEY:
-        logger.warning("ANTHROPIC_API_KEY not set — skipping AI analysis")
+    if not settings.ANTHROPIC_API_KEY and not settings.GEMINI_API_KEY:
+        logger.warning("Neither ANTHROPIC_API_KEY nor GEMINI_API_KEY is set — skipping AI analysis")
         return
 
     db = SessionLocal()
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
         report = await generate_assessment_recommendations(user_id, db, client)
 
         # Parse and store recommendations (simplified — store full report as one entry)

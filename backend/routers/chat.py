@@ -70,10 +70,10 @@ async def send_message(
     Send a message to the AI agent and receive a grounded response.
     Rate limited to 10 requests per minute per IP.
     """
-    if not settings.ANTHROPIC_API_KEY:
+    if not settings.ANTHROPIC_API_KEY and not settings.GEMINI_API_KEY:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="AI service is not configured. Please set ANTHROPIC_API_KEY.",
+            detail="AI service is not configured. Please set ANTHROPIC_API_KEY or GEMINI_API_KEY.",
         )
 
     # Sanitize input: strip whitespace, reject blank messages
@@ -108,7 +108,7 @@ async def send_message(
 
     # Run agentic loop
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
         ai_response, tools_called = await run_agent_loop(
             user_id=current_user.id,
             user_message=sanitized_message,

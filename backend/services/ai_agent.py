@@ -22,6 +22,12 @@ from typing import Any
 import anthropic
 from sqlalchemy.orm import Session
 
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
+
+from config import settings
 from models.db_models import Assessment, Challenge, ProgressEntry, Recommendation, User
 from services.carbon_engine import INDIA_AVERAGE_MONTHLY_KG, GLOBAL_AVERAGE_MONTHLY_KG
 from services.challenge_engine import generate_challenge_for_category
@@ -330,7 +336,7 @@ async def run_agent_loop(
     user_message: str,
     conversation_history: list[dict],
     db: Session,
-    anthropic_client: anthropic.Anthropic,
+    anthropic_client: Any = None,
 ) -> tuple[str, list[str]]:
     """
     Run the agentic tool-calling loop.
@@ -342,6 +348,71 @@ async def run_agent_loop(
       - final text response from the agent
       - list of tool names that were called (for frontend display)
     """
+    if settings.GEMINI_API_KEY:
+        if not genai:
+            raise ImportError("google-generativeai package is not installed.")
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+
+        # Local wrapper functions that capture the db Session
+        def get_user_assessment(user_id: str) -> dict:
+            """Fetch the user's latest completed carbon assessment data, including category-level emission breakdown (transport, energy, food, shopping, waste), total monthly emissions, and sustainability score.
+            
+            Args:
+                user_id: The user's ID as a string.
+            """
+            return tool_get_user_assessment(user_id, db)
+
+        def get_emission_benchmarks(category: str = "all") -> dict:
+            """Get India national average and global average emission benchmarks for comparison.
+            
+            Args:
+                category: Specific category to get benchmarks for (transport, energy, food, shopping, waste, or 'all').
+            """
+            return tool_get_emission_benchmarks(category)
+
+        def get_progress_history(user_id: str, months: int = 6) -> dict:
+            """Fetch the user's historical carbon footprint scores over past months.
+            
+            Args:
+                user_id: The user's ID as a string.
+                months: Number of past months to retrieve (default: 6).
+            """
+            return tool_get_progress_history(user_id, months, db)
+
+        def generate_challenge(user_id: str, category: str) -> dict:
+            """Generate a personalized weekly eco-challenge for the user based on their highest emission category.
+            
+            Args:
+                user_id: The user's ID as a string.
+                category: Category to generate challenge for (transport, energy, food, shopping, or waste).
+            """
+            return tool_generate_challenge(user_id, category, db)
+
+        tools = [get_user_assessment, get_emission_benchmarks, get_progress_history, generate_challenge]
+
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            generation_config={"temperature": 0.2},
+            system_instruction=SYSTEM_PROMPT,
+            tools=tools
+        )
+
+        gemini_history = []
+        for msg in conversation_history:
+            role = "model" if msg["role"] == "assistant" else "user"
+            gemini_history.append({"role": role, "parts": [msg["content"]]})
+
+        chat = model.start_chat(history=gemini_history)
+        response = chat.send_message(user_message, enable_automatic_function_calling=True)
+
+        tools_called = []
+        for history in chat.history:
+            for part in history.parts:
+                if part.function_call:
+                    tools_called.append(part.function_call.name)
+
+        return response.text, tools_called
+
     messages = conversation_history + [{"role": "user", "content": user_message}]
 
     # Track which tools were invoked (for agentic transparency UI)
@@ -410,7 +481,7 @@ async def run_agent_loop(
 async def generate_assessment_recommendations(
     user_id: int,
     db: Session,
-    anthropic_client: anthropic.Anthropic,
+    anthropic_client: Any = None,
 ) -> str:
     """
     Autonomously generate a RecommendationReport after assessment completion.
