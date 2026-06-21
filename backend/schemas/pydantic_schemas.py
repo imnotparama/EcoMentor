@@ -215,7 +215,6 @@ class RecommendationResponse(BaseModel):
     title: str
     description: str
     impact_kg_monthly: float
-    roadmap: Optional[str]
     created_at: datetime
 
 

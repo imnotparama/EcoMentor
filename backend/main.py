@@ -6,7 +6,7 @@ Architecture:
 - Rate limiting: via slowapi
 - JWT auth: httpOnly cookies
 - SQLite (dev) → PostgreSQL (prod) via SQLAlchemy
-- Agentic AI: Claude claude-sonnet-4-20250514 with 4 tools
+- Agentic AI: Claude config.ANTHROPIC_MODEL with 4 tools
 """
 
 import logging
@@ -16,15 +16,15 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from slowapi.util import get_remote_address
 
 from config import settings
 from database import create_db_tables
 from routers import auth, assessment, dashboard, chat, challenges, progress
 from schemas.pydantic_schemas import HealthResponse
+from auth_utils import limiter
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Logging
@@ -35,12 +35,6 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Rate Limiter
-# ──────────────────────────────────────────────────────────────────────────────
-
-limiter = Limiter(key_func=get_remote_address)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -84,9 +78,10 @@ app.add_middleware(SlowAPIMiddleware)
 
 # CORS — whitelist frontend origin only
 allowed_origins = [
+    "http://localhost:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5173",
-    "http://127.0.0.1:5174"
+    "http://127.0.0.1:5174",
 ]
 if settings.FRONTEND_URL:
     stripped_url = settings.FRONTEND_URL.rstrip("/")
@@ -95,11 +90,11 @@ if settings.FRONTEND_URL:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # covers Vercel preview deployments
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
-
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -166,4 +161,3 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "An internal server error occurred."},
     )
- 

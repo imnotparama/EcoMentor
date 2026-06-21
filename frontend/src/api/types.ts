@@ -54,7 +54,6 @@ export interface Recommendation {
   title: string
   description: string
   impact_kg_monthly: number
-  roadmap: string | null
   created_at: string
 }
 

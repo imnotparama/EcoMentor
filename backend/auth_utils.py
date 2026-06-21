@@ -9,6 +9,8 @@ import bcrypt
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from config import settings
 from database import get_db
@@ -16,11 +18,13 @@ from models.db_models import User
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    pw_bytes = plain_password.encode("utf-8")[:72]
+    return bcrypt.checkpw(pw_bytes, hashed_password.encode("utf-8"))
 
 
 def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    pw_bytes = password.encode("utf-8")[:72]
+    return bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -83,3 +87,19 @@ def get_current_user(
         )
 
     return user
+
+
+def get_rate_limit_key(request: Request) -> str:
+    token = request.cookies.get("access_token")
+    if token:
+        try:
+            payload = decode_token(token)
+            user_id = payload.get("sub")
+            if user_id:
+                return f"user:{user_id}"
+        except Exception:
+            pass
+    return get_remote_address(request)
+
+
+limiter = Limiter(key_func=get_rate_limit_key)

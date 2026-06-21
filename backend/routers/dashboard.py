@@ -93,12 +93,20 @@ def get_dashboard(
         .all()
     )
 
-    # Progress history (last 6 months)
+    # Progress history (last 6 months) for chart
     progress_entries = (
         db.query(ProgressEntry)
         .filter(ProgressEntry.user_id == current_user.id)
         .order_by(ProgressEntry.created_at.desc())
         .limit(6)
+        .all()
+    )
+
+    # Use ALL entries for cumulative savings and badge calculation, matching progress.py
+    all_progress_entries = (
+        db.query(ProgressEntry)
+        .filter(ProgressEntry.user_id == current_user.id)
+        .order_by(ProgressEntry.created_at.desc())
         .all()
     )
 
@@ -116,23 +124,21 @@ def get_dashboard(
         .count()
     )
 
-    # Cumulative CO2 saved vs. India average
-    cumulative_saved = 0.0
-    if progress_entries:
-        for entry in progress_entries:
-            saved = max(0, INDIA_MONTHLY - entry.total_monthly)
-            cumulative_saved += saved
+    # Cumulative CO2 saved vs. India average using all entries
+    cumulative_saved = sum(
+        max(0, INDIA_MONTHLY - e.total_monthly) for e in all_progress_entries
+    )
 
-    # Compute badges
+    # Compute badges using all_progress_entries
     sustainability_score = assessment.sustainability_score if assessment else 0.0
     badges = compute_badges(
         sustainability_score=sustainability_score,
         completed_challenges=completed_challenges_count,
         total_assessments=total_assessments,
-        progress_entries=progress_entries,
+        progress_entries=all_progress_entries,
     )
 
-    # Build progress history as list of dicts
+    # Build progress history as list of dicts for the last 6 months
     progress_history = [
         {
             "month_year": e.month_year,

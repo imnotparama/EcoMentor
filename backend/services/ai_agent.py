@@ -427,7 +427,7 @@ async def run_agent_loop(
         logger.info(f"Agent loop iteration {iteration}")
 
         response = anthropic_client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=settings.ANTHROPIC_MODEL,
             max_tokens=4096,
             system=SYSTEM_PROMPT,
             tools=AGENT_TOOLS,

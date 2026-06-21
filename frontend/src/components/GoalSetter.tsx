@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Target, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react'
+import { useAuthStore } from '@/store/authStore'
 
 interface GoalSetterProps {
   currentMonthly: number
@@ -17,20 +18,24 @@ export default function GoalSetter({ currentMonthly }: GoalSetterProps) {
   const [editing, setEditing] = useState(false)
   const [inputVal, setInputVal] = useState('')
 
+  const userId = useAuthStore((s) => s.user?.id)
+  const storageKey = userId ? `ecomentor_goal_${userId}` : 'ecomentor_goal_guest'
+
   useEffect(() => {
-    const saved = localStorage.getItem('ecomentor_goal')
+    const saved = localStorage.getItem(storageKey)
     if (saved) setGoal(Number(saved))
-  }, [])
+    else setGoal(null)
+  }, [storageKey])
 
   const saveGoal = (value: number) => {
     setGoal(value)
-    localStorage.setItem('ecomentor_goal', String(value))
+    localStorage.setItem(storageKey, String(value))
     setEditing(false)
   }
 
   const clearGoal = () => {
     setGoal(null)
-    localStorage.removeItem('ecomentor_goal')
+    localStorage.removeItem(storageKey)
   }
 
   const achieved = goal ? currentMonthly <= goal : false
@@ -120,22 +125,22 @@ export default function GoalSetter({ currentMonthly }: GoalSetterProps) {
               const target = fixed ?? Math.round(currentMonthly * (factor ?? 1))
               return (
                 <button
-                  key={label}
-                  onClick={() => saveGoal(target)}
-                  style={{
-                    background: 'var(--surface-2)', border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-sm)', padding: '0.375rem 0.5rem',
-                    cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text-secondary)',
-                    transition: 'all 0.15s', textAlign: 'left',
-                  }}
-                  onMouseOver={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--primary)'
-                    ;(e.currentTarget as HTMLElement).style.color = 'var(--primary)'
-                  }}
-                  onMouseOut={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'
-                    ;(e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)'
-                  }}
+                   key={label}
+                   onClick={() => saveGoal(target)}
+                   style={{
+                     background: 'var(--surface-2)', border: '1px solid var(--border)',
+                     borderRadius: 'var(--radius-sm)', padding: '0.375rem 0.5rem',
+                     cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text-secondary)',
+                     transition: 'all 0.15s', textAlign: 'left',
+                   }}
+                   onMouseOver={(e) => {
+                     (e.currentTarget as HTMLElement).style.borderColor = 'var(--primary)'
+                     ;(e.currentTarget as HTMLElement).style.color = 'var(--primary)'
+                   }}
+                   onMouseOut={(e) => {
+                     (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'
+                     ;(e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)'
+                   }}
                 >
                   <div style={{ fontWeight: 600 }}>{label}</div>
                   <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}>{target.toFixed(0)} kg/mo</div>

@@ -89,9 +89,9 @@ def login(body: UserLogin, response: Response, db: Session = Depends(get_db)):
 def logout(response: Response):
     """Clear auth cookies."""
     is_prod = settings.ENVIRONMENT == "production"
-    samesite = "none" if is_prod else "lax"
-    response.delete_cookie("access_token", path="/", samesite=samesite, secure=is_prod)
-    response.delete_cookie("refresh_token", path="/api/auth/refresh", samesite=samesite, secure=is_prod)
+    cookie_samesite = "none" if is_prod else "lax"
+    response.delete_cookie("access_token", path="/", samesite=cookie_samesite, secure=is_prod)
+    response.delete_cookie("refresh_token", path="/api/auth/refresh", samesite=cookie_samesite, secure=is_prod)
     return {"message": "Logged out successfully"}
 
 
@@ -102,7 +102,7 @@ def refresh_token(
     db: Session = Depends(get_db),
 ):
     """Refresh access token using refresh token from httpOnly cookie."""
-    from fastapi import Request as FastAPIRequest  # noqa: F401  (already imported)
+    from fastapi import Request as FastAPIRequest  # noqa: F401
 
     refresh_tok = request.cookies.get("refresh_token")
     if not refresh_tok:
@@ -179,21 +179,24 @@ def delete_account(
     db.delete(current_user)
     db.commit()
     is_prod = settings.ENVIRONMENT == "production"
-    samesite = "none" if is_prod else "lax"
-    response.delete_cookie("access_token", path="/", samesite=samesite, secure=is_prod)
-    response.delete_cookie("refresh_token", path="/api/auth/refresh", samesite=samesite, secure=is_prod)
+    cookie_samesite = "none" if is_prod else "lax"
+    response.delete_cookie("access_token", path="/", samesite=cookie_samesite, secure=is_prod)
+    response.delete_cookie("refresh_token", path="/api/auth/refresh", samesite=cookie_samesite, secure=is_prod)
 
 
 def _set_auth_cookies(response: Response, access_token: str, refresh_token: str) -> None:
     """Helper to set httpOnly auth cookies."""
     is_prod = settings.ENVIRONMENT == "production"
-    samesite = "none" if is_prod else "lax"
+    # Cross-site (Vercel <-> Render) cookies require SameSite=None + Secure=True.
+    # Same-site local dev keeps Lax so it still works over plain http://localhost.
+    cookie_samesite = "none" if is_prod else "lax"
+
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         secure=is_prod,
-        samesite=samesite,
+        samesite=cookie_samesite,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
@@ -202,7 +205,7 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str)
         value=refresh_token,
         httponly=True,
         secure=is_prod,
-        samesite=samesite,
+        samesite=cookie_samesite,
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
         path="/api/auth/refresh",
     )

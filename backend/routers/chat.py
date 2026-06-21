@@ -8,11 +8,9 @@ from datetime import datetime, timezone
 
 import anthropic
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
-from auth_utils import get_current_user
+from auth_utils import get_current_user, limiter
 from config import settings
 from database import get_db
 from models.db_models import ChatMessage, User
@@ -21,7 +19,6 @@ from services.ai_agent import run_agent_loop
 
 logger = logging.getLogger(__name__)
 
-limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 

@@ -117,7 +117,6 @@ class Recommendation(Base):
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     impact_kg_monthly: Mapped[float] = mapped_column(Float, nullable=False)
-    roadmap: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     # Relationships
