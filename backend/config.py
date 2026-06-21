@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     ANTHROPIC_MODEL: str = "claude-sonnet-4-6"
     GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-flash-latest"
     ENVIRONMENT: str = "development"
 
     @model_validator(mode="after")

@@ -401,8 +401,9 @@ async def run_agent_loop(
 
         tools = [get_user_assessment, get_emission_benchmarks, get_progress_history, generate_challenge]
 
+        model_name = getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash")
         model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name=model_name,
             generation_config={"temperature": 0.2},
             system_instruction=current_system_prompt,
             tools=tools
@@ -414,7 +415,21 @@ async def run_agent_loop(
             gemini_history.append({"role": role, "parts": [msg["content"]]})
 
         chat = model.start_chat(history=gemini_history, enable_automatic_function_calling=True)
-        response = await asyncio.to_thread(chat.send_message, user_message)
+        try:
+            response = await asyncio.to_thread(chat.send_message, user_message)
+        except Exception as e:
+            if model_name == "gemini-2.5-flash" and ("RESOURCE_EXHAUSTED" in str(e) or "quota" in str(e).lower()):
+                logger.warning("Gemini 2.5 Flash quota exhausted — falling back to gemini-flash-latest for chat")
+                fallback_model = genai.GenerativeModel(
+                    model_name="gemini-flash-latest",
+                    generation_config={"temperature": 0.2},
+                    system_instruction=current_system_prompt,
+                    tools=tools
+                )
+                chat = fallback_model.start_chat(history=gemini_history, enable_automatic_function_calling=True)
+                response = await asyncio.to_thread(chat.send_message, user_message)
+            else:
+                raise e
 
         tools_called = []
         for history in chat.history:
@@ -545,13 +560,26 @@ Be specific with numbers. Reference their actual data throughout. Make the roadm
             if not genai:
                 raise ImportError("google-generativeai package is not installed.")
             genai.configure(api_key=settings.GEMINI_API_KEY)
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash")
             model = genai.GenerativeModel(
-                model_name="gemini-2.5-flash",
+                model_name=model_name,
                 generation_config={"temperature": 0.2},
                 system_instruction=system_prompt,
             )
-            # Run blocking Gemini SDK call in a separate thread to keep the event loop responsive
-            response = await asyncio.to_thread(model.generate_content, prompt)
+            try:
+                # Run blocking Gemini SDK call in a separate thread to keep the event loop responsive
+                response = await asyncio.to_thread(model.generate_content, prompt)
+            except Exception as e:
+                if model_name == "gemini-2.5-flash" and ("RESOURCE_EXHAUSTED" in str(e) or "quota" in str(e).lower()):
+                    logger.warning("Gemini 2.5 Flash quota exhausted during recommendations generation — falling back to gemini-flash-latest")
+                    fallback_model = genai.GenerativeModel(
+                        model_name="gemini-flash-latest",
+                        generation_config={"temperature": 0.2},
+                        system_instruction=system_prompt,
+                    )
+                    response = await asyncio.to_thread(fallback_model.generate_content, prompt)
+                else:
+                    raise e
             return response.text
 
         elif anthropic_client:
