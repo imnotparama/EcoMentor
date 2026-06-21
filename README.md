@@ -171,6 +171,17 @@ All emission factors are scientifically sourced:
 
 ---
 
+## 📋 Key Assumptions
+
+To ensure the accuracy and reliability of the sustainability coach, the following assumptions were made during development:
+1. **Geographical Focus**: Emission benchmarks and electricity factors default to India-specific values (e.g., India's grid carbon intensity of `0.82 kg CO₂/kWh` as published by the Central Electricity Authority of India).
+2. **Transportation**: Vehicle distance calculations assume a linear relationship with fuel consumption based on standard average driving cycles (e.g., petrol car factor of `0.21 kg CO₂/km`).
+3. **Diet and Food Lifecycle**: Dietary carbon impacts are simplified into five main categories (Vegan, Vegetarian, Balanced, Meat-Heavy, and Seafood-Heavy) using global aggregate lifecycle data from Poore & Nemecek (2018).
+4. **Data Persistence**: Local development runs on a standard SQLite file, but production deployments assume a relational schema migration to PostgreSQL (supported natively via SQLAlchemy in [database.py](file:///c:/Users/hunte/EcoMentor/backend/database.py)).
+5. **AI Interaction Context**: The conversational agent limits the user prompt history context to the last 20 messages to prevent token limits and optimize inference response times.
+
+---
+
 ## 📡 API Reference
 
 | Method | Endpoint | Description |
