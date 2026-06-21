@@ -21,9 +21,15 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear local auth state and redirect to login
-      useAuthStore.getState().logout()
-      window.location.href = '/login'
+      // Don't redirect on login or register requests
+      const requestUrl = error.config?.url || ''
+      const isAuthRoute = requestUrl.includes('/api/auth/login') || requestUrl.includes('/api/auth/register')
+      
+      if (!isAuthRoute) {
+        // Clear local auth state and redirect to login
+        useAuthStore.getState().logout()
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
