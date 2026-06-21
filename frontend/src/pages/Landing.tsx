@@ -85,18 +85,21 @@ function AgenticDemoAnimation() {
 
   return (
     <div ref={ref} style={{
-      background: 'var(--surface)',
-      border: '1px solid var(--border)',
+      background: 'rgba(22, 27, 34, 0.45)',
+      border: '1px solid rgba(255, 255, 255, 0.08)',
       borderRadius: 'var(--radius-xl)',
       padding: '1.75rem',
       fontFamily: 'var(--font-mono)',
       fontSize: '0.8rem',
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
+      boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
     }}>
       {/* User query */}
       <div style={{ marginBottom: '1.25rem' }}>
         <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', marginBottom: '0.5rem' }}>USER MESSAGE</div>
         <div style={{
-          background: 'var(--accent-dim)', border: '1px solid rgba(88,166,255,0.2)',
+          background: 'rgba(88, 166, 255, 0.12)', border: '1px solid rgba(88, 166, 255, 0.2)',
           borderRadius: 'var(--radius-md)', padding: '0.625rem 0.875rem', color: 'var(--text-primary)',
           fontSize: '0.85rem',
         }}>
@@ -116,8 +119,8 @@ function AgenticDemoAnimation() {
               style={{
                 display: 'flex', alignItems: 'center', gap: '0.625rem',
                 padding: '0.5rem 0.75rem',
-                background: visibleSteps.includes(i) ? `${step.color}12` : 'var(--surface-2)',
-                border: `1px solid ${visibleSteps.includes(i) ? `${step.color}35` : 'var(--border-subtle)'}`,
+                background: visibleSteps.includes(i) ? `${step.color}12` : 'rgba(255, 255, 255, 0.02)',
+                border: `1px solid ${visibleSteps.includes(i) ? `${step.color}35` : 'rgba(255, 255, 255, 0.06)'}`,
                 borderRadius: 'var(--radius-sm)',
                 transition: 'all 0.4s ease',
                 opacity: visibleSteps.includes(i) ? 1 : 0.35,
@@ -126,7 +129,7 @@ function AgenticDemoAnimation() {
               {visibleSteps.includes(i) ? (
                 <CheckCircle2 size={14} color={step.color} />
               ) : (
-                <div style={{ width: 14, height: 14, borderRadius: '50%', border: `2px solid var(--border)` }} />
+                <div style={{ width: 14, height: 14, borderRadius: '50%', border: `2px solid rgba(255, 255, 255, 0.1)` }} />
               )}
               <span style={{ color: step.color, fontWeight: 600 }}>{step.emoji} {step.tool}</span>
               {visibleSteps.includes(i) && (
@@ -144,7 +147,7 @@ function AgenticDemoAnimation() {
       }}>
         <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', marginBottom: '0.5rem' }}>CLAUDE RESPONSE</div>
         <div style={{
-          background: 'rgba(63,185,80,0.08)', border: '1px solid rgba(63,185,80,0.25)',
+          background: 'rgba(63, 185, 80, 0.08)', border: '1px solid rgba(63, 185, 80, 0.25)',
           borderRadius: 'var(--radius-md)', padding: '0.875rem 1rem',
           color: 'var(--text-secondary)', fontSize: '0.8rem', lineHeight: 1.7,
         }}>
@@ -168,11 +171,17 @@ export default function Landing() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}>
       <ParticleBackground count={20} />
 
+      {/* Glassmorphic Background Blur Blobs */}
+      <div className="glass-glow-blob blob-1" />
+      <div className="glass-glow-blob blob-2" />
+
       {/* Navigation */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        borderBottom: '1px solid var(--border)',
-        background: 'rgba(13,17,23,0.85)', backdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'rgba(7, 9, 13, 0.45)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         padding: '0 2rem',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', height: 64, gap: '1rem' }}>
@@ -182,8 +191,8 @@ export default function Landing() {
               background: 'linear-gradient(135deg, #3FB950, #26a641)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 0 16px rgba(63,185,80,0.4)',
-            }}>
-              <Leaf size={18} color="#0D1117" aria-hidden="true" />
+            }} className="leaf-spin-hover">
+              <Leaf size={18} color="#07090D" aria-hidden="true" />
             </div>
             <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
               EcoMentor <span style={{ color: 'var(--primary)' }}>AI</span>
@@ -279,13 +288,15 @@ export default function Landing() {
           </div>
 
           <div style={{
-            background: 'rgba(22,27,34,0.8)',
-            border: '1px solid var(--border)',
+            background: 'rgba(22, 27, 34, 0.45)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: 'var(--radius-lg)',
             padding: '1rem 1.5rem',
             width: '100%', maxWidth: 360,
             textAlign: 'center',
-            backdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
           }}>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
               Monthly Footprint Comparison
@@ -313,7 +324,15 @@ export default function Landing() {
       </section>
 
       {/* Stats bar */}
-      <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--surface)', position: 'relative', zIndex: 1 }}>
+      <section style={{
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'rgba(22, 27, 34, 0.35)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        position: 'relative',
+        zIndex: 1
+      }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }} className="stats-grid">
           {stats.map(({ value, unit, label }) => (
             <div key={label} style={{ textAlign: 'center', padding: '0.5rem' }}>
@@ -361,7 +380,7 @@ export default function Landing() {
                     width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0,
                     boxShadow: `0 0 8px ${color}`,
                   }} />
-                  <code style={{ background: 'var(--surface-2)', padding: '0.2em 0.5em', borderRadius: 4, color, fontSize: '0.8em', border: `1px solid ${color}30` }}>
+                  <code style={{ background: 'rgba(28, 33, 40, 0.4)', padding: '0.2em 0.5em', borderRadius: 4, color, fontSize: '0.8em', border: `1px solid ${color}30` }}>
                     {tool}
                   </code>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{desc}</span>
@@ -380,7 +399,7 @@ export default function Landing() {
       </section>
 
       {/* Features Grid */}
-      <section style={{ padding: 'clamp(3rem, 8vw, 6rem) 2rem', borderTop: '1px solid var(--border)', position: 'relative', zIndex: 1 }}>
+      <section style={{ padding: 'clamp(3rem, 8vw, 6rem) 2rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h2 style={{ marginBottom: '1rem' }}>Everything You Need to Go Green</h2>
           <p style={{ maxWidth: 560, margin: '0 auto' }}>
@@ -407,7 +426,7 @@ export default function Landing() {
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.transform = 'translateY(0)'
-                el.style.borderColor = 'var(--border)'
+                el.style.borderColor = 'rgba(255, 255, 255, 0.08)'
                 el.style.boxShadow = 'none'
               }}
             >
@@ -428,7 +447,15 @@ export default function Landing() {
       </section>
 
       {/* How It Works */}
-      <section style={{ padding: 'clamp(3rem, 8vw, 5rem) 2rem', borderTop: '1px solid var(--border)', background: 'var(--surface)', position: 'relative', zIndex: 1 }}>
+      <section style={{
+        padding: 'clamp(3rem, 8vw, 5rem) 2rem',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'rgba(22, 27, 34, 0.35)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        position: 'relative',
+        zIndex: 1
+      }}>
         <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ marginBottom: '0.75rem' }}>Get Started in 3 Steps</h2>
           <p style={{ marginBottom: '3rem' }}>Your personalized sustainability journey starts in minutes.</p>
@@ -463,7 +490,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer style={{
-        borderTop: '1px solid var(--border)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
         padding: '2rem',
         textAlign: 'center',
         color: 'var(--text-muted)',

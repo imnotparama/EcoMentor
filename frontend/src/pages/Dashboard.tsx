@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   TrendingUp, TrendingDown, Leaf, Globe, Award,
-  ClipboardList, ChevronRight, Zap, Car, ShoppingBag, Trash2,
+  ClipboardList, ChevronRight, Zap, Car, ShoppingBag, Trash2, Bot, Trophy, Activity
 } from 'lucide-react'
 import { useDashboard } from '@/hooks/useDashboard'
 import CarbonHalo from '@/components/profile/CarbonHalo'
@@ -25,20 +25,18 @@ const categoryConfig = {
 
 function EmptyState() {
   return (
-    <div style={{
+    <div className="card" style={{
       gridColumn: '1 / -1',
       textAlign: 'center', padding: '4rem 2rem',
-      background: 'var(--surface)',
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-xl)',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
     }}>
       <div style={{
         width: 80, height: 80, borderRadius: '50%',
         background: 'var(--primary-dim)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         margin: '0 auto 1.5rem',
-        boxShadow: '0 0 30px rgba(63,185,80,0.15)',
-      }}>
+        boxShadow: '0 0 30px rgba(63,185,80,0.25)',
+      }} className="leaf-spin-hover">
         <Leaf size={36} color="var(--primary)" />
       </div>
       <h2 style={{ marginBottom: '0.75rem' }}>Let's Calculate Your Footprint</h2>
@@ -103,15 +101,27 @@ export default function Dashboard() {
     <div>
       {/* Page header */}
       <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>Dashboard</h1>
-          <p style={{ margin: 0, fontSize: '0.875rem' }}>
-            Welcome back,{' '}
-            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
-              {data?.user?.name?.split(' ')[0]}
-            </span>{' '}
-            👋
-          </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{
+            width: 42, height: 42, borderRadius: '50%',
+            background: 'var(--primary-dim)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: '1px solid rgba(63,185,80,0.25)',
+          }} className="leaf-spin-hover">
+            <Leaf size={22} color="var(--primary)" />
+          </div>
+          <div>
+            <h1 style={{ fontSize: '1.5rem', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              Dashboard
+            </h1>
+            <p style={{ margin: 0, fontSize: '0.875rem' }}>
+              Welcome back,{' '}
+              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                {data?.user?.name?.split(' ')[0]}
+              </span>{' '}
+              👋
+            </p>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <Link to="/assessment" className="btn btn-secondary btn-sm">
@@ -134,16 +144,13 @@ export default function Dashboard() {
           {/* Top row: Score card + Benchmarks + Goal */}
           <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr 240px', gap: '1.5rem', alignItems: 'start' }} className="top-grid">
             {/* Score Card */}
-            <div style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-xl)',
+            <div className="card scale-hover" style={{
               padding: '2rem',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               gap: '1.25rem',
-              boxShadow: '0 0 24px rgba(63,185,80,0.05)',
+              boxShadow: '0 0 30px rgba(63,185,80,0.08)',
             }}>
               <CarbonHalo score={score} size={170} animated />
 
@@ -189,10 +196,7 @@ export default function Dashboard() {
                 const pct = Math.abs(((avg - yours) / avg) * 100).toFixed(0)
                 const better = yours < avg
                 return (
-                  <div key={label} style={{
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-lg)',
+                  <div key={label} className="card scale-hover" style={{
                     padding: '1.25rem',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
@@ -207,7 +211,7 @@ export default function Dashboard() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ height: 8, background: 'var(--surface-3)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{ height: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 4, overflow: 'hidden' }}>
                           <div style={{
                             height: '100%',
                             width: `${Math.min(100, (yours / avg) * 100)}%`,
@@ -229,13 +233,11 @@ export default function Dashboard() {
               })}
 
               {/* Category breakdown */}
-              <div style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
+              <div className="card scale-hover" style={{
                 padding: '1.25rem',
               }}>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', fontWeight: 600 }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Activity size={14} color="var(--primary)" />
                   Category Breakdown
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -248,7 +250,7 @@ export default function Dashboard() {
                       <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                         <Icon size={14} color={cfg.color} style={{ flexShrink: 0 }} />
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', width: 64 }}>{cfg.label}</span>
-                        <div style={{ flex: 1, height: 6, background: 'var(--surface-3)', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
                           <div style={{
                             height: '100%', width: `${pct}%`, background: cfg.color,
                             borderRadius: 3, transition: 'width 1s ease',
@@ -274,8 +276,11 @@ export default function Dashboard() {
           {/* Charts row */}
           {hasData && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }} className="charts-grid">
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>Emission Breakdown</h3>
+              <div className="card scale-hover" style={{ padding: '1.5rem' }}>
+                <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Leaf size={14} color="var(--primary)" />
+                  Emission Breakdown
+                </h3>
                 <EmissionDonut
                   transport={assessment.transport_emissions_monthly ?? 0}
                   energy={assessment.energy_emissions_monthly ?? 0}
@@ -285,8 +290,11 @@ export default function Dashboard() {
                 />
               </div>
 
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>Monthly Trend</h3>
+              <div className="card scale-hover" style={{ padding: '1.5rem' }}>
+                <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <TrendingUp size={14} color="var(--accent)" />
+                  Monthly Trend
+                </h3>
                 {data.progress_history.length > 0 ? (
                   <MonthlyTrend data={data.progress_history} />
                 ) : (
@@ -296,8 +304,11 @@ export default function Dashboard() {
                 )}
               </div>
 
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>vs. Benchmarks</h3>
+              <div className="card scale-hover" style={{ padding: '1.5rem' }}>
+                <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Globe size={14} color="var(--warning)" />
+                  vs. Benchmarks
+                </h3>
                 <RadarComparison
                   userEmissions={{
                     transport: assessment.transport_emissions_monthly ?? 0,
@@ -315,15 +326,10 @@ export default function Dashboard() {
           {/* Bottom row: AI Insights + Challenges */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '1.5rem' }} className="bottom-grid">
             {/* AI Insights */}
-            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '1.5rem' }}>
+            <div className="card scale-hover" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <h3 style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{
-                    width: 24, height: 24, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.75rem',
-                  }}>🤖</span>
+                  <Bot size={18} color="var(--accent)" />
                   AI Insights
                 </h3>
                 <Link to="/chat" className="btn btn-accent btn-sm" id="btn-chat-ai">Chat with AI</Link>
@@ -352,9 +358,12 @@ export default function Dashboard() {
             </div>
 
             {/* Active Challenges */}
-            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '1.5rem' }}>
+            <div className="card scale-hover" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '0.9rem' }}>🏆 Active Challenges</h3>
+                <h3 style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Trophy size={16} color="var(--warning)" />
+                  Active Challenges
+                </h3>
                 <Link to="/challenges" className="btn btn-secondary btn-sm">View All</Link>
               </div>
 
