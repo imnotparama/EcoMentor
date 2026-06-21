@@ -260,7 +260,7 @@ CHALLENGE_TEMPLATES: dict[str, list[dict]] = {
 }
 
 
-def generate_challenge_for_category(category: str) -> dict:
+def generate_challenge_for_category(category: str, exclude_titles: Optional[list[str]] = None) -> dict:
     """
     Generate a random challenge from the given category.
     Returns challenge data as a dictionary.
@@ -269,7 +269,13 @@ def generate_challenge_for_category(category: str) -> dict:
         # Default to energy if category not found
         category = "energy"
 
-    challenge = random.choice(CHALLENGE_TEMPLATES[category])
+    templates = CHALLENGE_TEMPLATES[category]
+    if exclude_titles:
+        filtered = [t for t in templates if t["title"] not in exclude_titles]
+        if filtered:
+            templates = filtered
+
+    challenge = random.choice(templates)
     return {**challenge, "category": category}
 
 

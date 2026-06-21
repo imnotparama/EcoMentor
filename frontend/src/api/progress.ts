@@ -7,11 +7,15 @@ export const progressApi = {
     return res.data
   },
 
-  exportData: (): void => {
-    // Trigger browser download of export JSON
-    window.open(
-      `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/progress/export`,
-      '_blank'
-    )
+  exportData: async (): Promise<void> => {
+    const res = await apiClient.get('/api/progress/export', { responseType: 'blob' })
+    const url = window.URL.createObjectURL(new Blob([res.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'ecomentor_export.json')
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
   },
 }

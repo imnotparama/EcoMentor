@@ -20,8 +20,12 @@ export function useProgress() {
     }
   }, [])
 
-  const exportData = useCallback(() => {
-    progressApi.exportData()
+  const exportData = useCallback(async () => {
+    try {
+      await progressApi.exportData()
+    } catch (err: unknown) {
+      console.error('Failed to export data:', err)
+    }
   }, [])
 
   return { data, isLoading, error, load, exportData }

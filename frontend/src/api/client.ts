@@ -15,6 +15,21 @@ const apiClient = axios.create({
   },
 })
 
+// Request interceptor: attach accessToken if present
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = useAuthStore.getState().accessToken
+    if (token) {
+      config.headers = config.headers ?? {}
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 let isRefreshing = false
 let failedQueue: any[] = []
 
@@ -56,7 +71,9 @@ apiClient.interceptors.response.use(
 
       return new Promise((resolve, reject) => {
         apiClient.post('/api/auth/refresh')
-          .then(() => {
+          .then((res) => {
+            const { access_token, user } = res.data
+            useAuthStore.getState().setUser(user, access_token)
             isRefreshing = false
             resolve(apiClient(originalRequest))
             processQueue(null)

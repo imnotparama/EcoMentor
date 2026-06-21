@@ -28,8 +28,6 @@ from services.carbon_engine import (
     EnergyInput, FoodInput, ShoppingInput, TransportInput, WasteInput, calculate_all_emissions
 )
 
-create_db_tables()
-
 DEMO_USERS = [
     {
         "email": "maya@demo.ecomentor.ai",
@@ -322,4 +320,5 @@ def _generate_demo_chat_response(profile: str, result) -> str:
 
 
 if __name__ == "__main__":
+    create_db_tables()
     create_seed_data()

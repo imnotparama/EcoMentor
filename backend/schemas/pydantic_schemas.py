@@ -159,16 +159,6 @@ class AssessmentCreate(BaseModel):
     waste: Optional[WasteData] = None
 
 
-class EmissionBreakdown(BaseModel):
-    transport_emissions_monthly: float
-    energy_emissions_monthly: float
-    food_emissions_monthly: float
-    shopping_emissions_monthly: float
-    waste_emissions_monthly: float
-    total_monthly: float
-    total_annual: float
-    sustainability_score: float
-
 
 class AssessmentResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

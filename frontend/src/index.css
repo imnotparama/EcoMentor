@@ -25,7 +25,7 @@
   --danger-dim: rgba(248, 81, 73, 0.15);
   --text-primary: #E6EDF3;
   --text-secondary: #8B949E;
-  --text-muted: #484F58;
+  --text-muted: #7d8590; /* was #484F58 (~2.3:1, fails AA). New value ~5:1, passes AA for normal text. */
   --border: rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.04);
 

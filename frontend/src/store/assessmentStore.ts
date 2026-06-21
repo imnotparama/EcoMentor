@@ -33,17 +33,17 @@ const initialState = {
   currentStep: 0,
   transport: {
     daily_distance_km: 0,
-    vehicle_type: 'none',
+    vehicle_type: '',
     fuel_type: 'none',
     public_transport_days_per_week: 0,
   },
   energy: {
     monthly_electricity_kwh: 0,
     daily_ac_hours: 0,
-    renewable_energy: 'no',
+    renewable_energy: '',
   },
   food: {
-    diet_type: 'vegetarian',
+    diet_type: '',
     weekly_meat_meals: 0,
   },
   shopping: {
@@ -51,7 +51,7 @@ const initialState = {
     monthly_new_clothing: 0,
   },
   waste: {
-    recycling_habit: 'sometimes',
+    recycling_habit: '',
     weekly_waste_kg: 0,
   },
   isSubmitting: false,

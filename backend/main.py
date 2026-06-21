@@ -12,16 +12,18 @@ Architecture:
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from config import settings
-from database import create_db_tables
+from database import create_db_tables, get_db
 from routers import auth, assessment, dashboard, chat, challenges, progress
 from schemas.pydantic_schemas import HealthResponse
 from auth_utils import limiter
@@ -90,7 +92,7 @@ if settings.FRONTEND_URL:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",  # covers Vercel preview deployments
+    allow_origin_regex=r"https://ecomentor-ai(-[a-z0-9-]+)?\.vercel\.app",  # covers Vercel preview deployments
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
@@ -134,8 +136,9 @@ app.include_router(progress.router)
 # ──────────────────────────────────────────────────────────────────────────────
 
 @app.get("/health", response_model=HealthResponse, tags=["health"])
-def health_check():
+def health_check(db: Session = Depends(get_db)):
     """Health check endpoint for Render deployment."""
+    db.execute(text("SELECT 1"))
     return HealthResponse(status="ok", version="1.0.0")
 
 

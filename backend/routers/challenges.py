@@ -115,8 +115,16 @@ def generate_new_challenge(
         sustainability_score=assessment.sustainability_score or 0,
     )
 
+    # Find active challenges to exclude duplicate generations
+    active_challenges = (
+        db.query(Challenge)
+        .filter(Challenge.user_id == current_user.id, Challenge.completed == False)
+        .all()
+    )
+    active_titles = [c.title for c in active_challenges]
+
     category = get_highest_emission_category(result)
-    challenge_data = generate_challenge_for_category(category)
+    challenge_data = generate_challenge_for_category(category, exclude_titles=active_titles)
 
     challenge = Challenge(
         user_id=current_user.id,

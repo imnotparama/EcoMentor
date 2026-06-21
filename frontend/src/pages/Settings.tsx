@@ -4,6 +4,7 @@ import { Settings as SettingsIcon, User, MapPin, Users, Trash2, Download, Clipbo
 import { authApi } from '@/api/auth'
 import { progressApi } from '@/api/progress'
 import { useAuthStore } from '@/store/authStore'
+import { formatError } from '@/utils/formatError'
 
 export default function Settings() {
   const { user, setUser, logout } = useAuthStore()
@@ -37,8 +38,8 @@ export default function Settings() {
       setUser(updated)
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 3000)
-    } catch {
-      setError('Failed to update profile')
+    } catch (err: unknown) {
+      setError(formatError(err, 'Failed to update profile'))
     } finally {
       setIsSaving(false)
     }
@@ -50,8 +51,8 @@ export default function Settings() {
       await authApi.deleteAccount()
       logout()
       navigate('/')
-    } catch {
-      setError('Failed to delete account. Please try again.')
+    } catch (err: unknown) {
+      setError(formatError(err, 'Failed to delete account. Please try again.'))
       setDeleteLoading(false)
       setShowDeleteConfirm(false)
     }

@@ -41,9 +41,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const handleLogout = async () => {
-    await authApi.logout()
-    logout()
-    navigate('/login')
+    try {
+      await authApi.logout()
+    } catch (error) {
+      console.error('Logout request failed:', error)
+    } finally {
+      logout()
+      navigate('/login')
+    }
   }
 
   const userInitial = user?.name?.charAt(0).toUpperCase() ?? '?'

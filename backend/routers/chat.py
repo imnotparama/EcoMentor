@@ -96,16 +96,17 @@ async def send_message(
     history_records = (
         db.query(ChatMessage)
         .filter(ChatMessage.user_id == current_user.id)
-        .order_by(ChatMessage.created_at.asc())
+        .order_by(ChatMessage.created_at.desc())
         .limit(20)
         .all()
     )
+    history_records = list(reversed(history_records))
     # Exclude the message we just added (it will be added as the current turn)
     conversation_history = _build_conversation_history(history_records[:-1])
 
     # Run agentic loop
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
+        client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
         ai_response, tools_called = await run_agent_loop(
             user_id=current_user.id,
             user_message=sanitized_message,

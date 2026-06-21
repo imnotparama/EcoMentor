@@ -15,6 +15,7 @@ Tool flow for chat:
 - Any combination of the above, called as needed mid-conversation.
 """
 
+import asyncio
 import json
 import logging
 from typing import Any
@@ -413,7 +414,7 @@ async def run_agent_loop(
             gemini_history.append({"role": role, "parts": [msg["content"]]})
 
         chat = model.start_chat(history=gemini_history, enable_automatic_function_calling=True)
-        response = chat.send_message(user_message)
+        response = await asyncio.to_thread(chat.send_message, user_message)
 
         tools_called = []
         for history in chat.history:
@@ -436,7 +437,7 @@ async def run_agent_loop(
         iteration += 1
         logger.info(f"Agent loop iteration {iteration}")
 
-        response = anthropic_client.messages.create(
+        response = await anthropic_client.messages.create(
             model=settings.ANTHROPIC_MODEL,
             max_tokens=4096,
             system=current_system_prompt,

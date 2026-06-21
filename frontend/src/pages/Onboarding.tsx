@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { User, MapPin, Users, ArrowRight, Leaf } from 'lucide-react'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/store/authStore'
+import { formatError } from '@/utils/formatError'
 
 export default function Onboarding() {
   const [age, setAge] = useState('')
@@ -29,8 +30,8 @@ export default function Onboarding() {
       })
       setUser(updated)
       navigate('/assessment')
-    } catch {
-      setError('Failed to save profile. Please try again.')
+    } catch (err: unknown) {
+      setError(formatError(err, 'Failed to save profile. Please try again.'))
     } finally {
       setIsLoading(false)
     }

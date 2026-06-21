@@ -4,6 +4,7 @@ import { Car, Zap, Leaf, ShoppingBag, Trash2, CheckCircle2, ArrowRight, ArrowLef
 import { assessmentApi } from '@/api/assessment'
 import { useAssessmentStore } from '@/store/assessmentStore'
 import { motion } from 'framer-motion'
+import { formatError } from '@/utils/formatError'
 
 const STEPS = [
   { id: 'transport', label: 'Transport', icon: Car, color: '#58A6FF' },
@@ -351,25 +352,6 @@ function WasteStep() {
   )
 }
 
-const formatError = (err: unknown, fallback: string): string => {
-  const axiosErr = err as { response?: { data?: { detail?: unknown } } }
-  const detail = axiosErr?.response?.data?.detail
-  if (!detail) {
-    return fallback
-  }
-  if (typeof detail === 'string') {
-    return detail
-  }
-  if (Array.isArray(detail)) {
-    return detail
-      .map((d: any) => {
-        const field = d.loc ? d.loc[d.loc.length - 1] : ''
-        return field ? `${field}: ${d.msg}` : d.msg
-      })
-      .join(', ')
-  }
-  return fallback
-}
 
 const StepComponents = [TransportStep, EnergyStep, FoodStep, ShoppingStep, WasteStep]
 
@@ -392,6 +374,28 @@ export default function Assessment() {
     try {
       // Save current step data
       const stepKey = currentStepData.id
+      
+      if (stepKey === 'transport' && !transport.vehicle_type) {
+        setError('Please select a primary vehicle type.')
+        setIsSaving(false)
+        return
+      }
+      if (stepKey === 'energy' && !energy.renewable_energy) {
+        setError('Please select a renewable energy usage option.')
+        setIsSaving(false)
+        return
+      }
+      if (stepKey === 'food' && !food.diet_type) {
+        setError('Please select a diet type.')
+        setIsSaving(false)
+        return
+      }
+      if (stepKey === 'waste' && !waste.recycling_habit) {
+        setError('Please select a recycling habit.')
+        setIsSaving(false)
+        return
+      }
+
       const stepData: Record<string, unknown> = {}
 
       if (stepKey === 'transport') stepData.transport = transport

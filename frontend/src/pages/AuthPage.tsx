@@ -3,26 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Leaf, ArrowRight } from 'lucide-react'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/store/authStore'
-
-const formatError = (err: unknown, fallback: string): string => {
-  const axiosErr = err as { response?: { data?: { detail?: unknown } } }
-  const detail = axiosErr?.response?.data?.detail
-  if (!detail) {
-    return fallback
-  }
-  if (typeof detail === 'string') {
-    return detail
-  }
-  if (Array.isArray(detail)) {
-    return detail
-      .map((d: any) => {
-        const field = d.loc ? d.loc[d.loc.length - 1] : ''
-        return field ? `${field}: ${d.msg}` : d.msg
-      })
-      .join(', ')
-  }
-  return fallback
-}
+import { formatError } from '@/utils/formatError'
 
 interface AuthPageProps {
   mode: 'login' | 'register'
@@ -54,7 +35,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
         ? await authApi.login(email, password)
         : await authApi.register(email, password, name)
 
-      setUser(response.user)
+      setUser(response.user, response.access_token)
       navigate(isLogin ? '/dashboard' : '/onboarding')
     } catch (err: unknown) {
       setError(

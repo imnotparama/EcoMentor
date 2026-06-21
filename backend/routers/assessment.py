@@ -218,7 +218,13 @@ def complete_assessment(
 
     # Generate a weekly challenge for the highest emission category
     highest_category = get_highest_emission_category(result)
-    challenge_data = generate_challenge_for_category(highest_category)
+    active_challenges = (
+        db.query(Challenge)
+        .filter(Challenge.user_id == current_user.id, Challenge.completed == False)
+        .all()
+    )
+    active_titles = [c.title for c in active_challenges]
+    challenge_data = generate_challenge_for_category(highest_category, exclude_titles=active_titles)
     challenge = Challenge(
         user_id=current_user.id,
         title=challenge_data["title"],
@@ -251,7 +257,7 @@ async def _run_ai_analysis_background(user_id: int, assessment_id: int) -> None:
 
     db = SessionLocal()
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
+        client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
         report = await generate_assessment_recommendations(user_id, db, client)
 
         # Parse and store recommendations (simplified — store full report as one entry)
