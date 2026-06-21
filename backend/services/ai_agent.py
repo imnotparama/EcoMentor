@@ -348,6 +348,16 @@ async def run_agent_loop(
       - final text response from the agent
       - list of tool names that were called (for frontend display)
     """
+    user = db.query(User).filter(User.id == user_id).first()
+    user_name = user.name if user else "User"
+
+    current_system_prompt = (
+        f"{SYSTEM_PROMPT}\n\n"
+        f"IMPORTANT Context:\n"
+        f"- You are chatting with user: {user_name}.\n"
+        f"- The user's ID is: {user_id}. When calling tools (like get_user_assessment, get_progress_history, generate_challenge), ALWAYS use this user_id: '{user_id}'. Do NOT ask the user for their user_id, you already have it in this system prompt. Always start by fetching their data."
+    )
+
     if settings.GEMINI_API_KEY:
         if not genai:
             raise ImportError("google-generativeai package is not installed.")
@@ -393,7 +403,7 @@ async def run_agent_loop(
         model = genai.GenerativeModel(
             model_name="gemini-2.5-flash",
             generation_config={"temperature": 0.2},
-            system_instruction=SYSTEM_PROMPT,
+            system_instruction=current_system_prompt,
             tools=tools
         )
 
@@ -429,7 +439,7 @@ async def run_agent_loop(
         response = anthropic_client.messages.create(
             model=settings.ANTHROPIC_MODEL,
             max_tokens=4096,
-            system=SYSTEM_PROMPT,
+            system=current_system_prompt,
             tools=AGENT_TOOLS,
             messages=messages,
         )
