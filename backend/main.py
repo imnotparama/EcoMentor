@@ -92,7 +92,7 @@ if settings.FRONTEND_URL:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://ecomentor-ai(-[a-z0-9-]+)?\.vercel\.app",  # covers Vercel preview deployments
+    allow_origin_regex=r"https://(ecomentor-ai|eco-mentor-nu)(-[a-z0-9-]+)?\.vercel\.app",  # covers Vercel preview deployments
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
