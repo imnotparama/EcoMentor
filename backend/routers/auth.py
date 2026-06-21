@@ -88,8 +88,10 @@ def login(body: UserLogin, response: Response, db: Session = Depends(get_db)):
 @router.post("/logout")
 def logout(response: Response):
     """Clear auth cookies."""
-    response.delete_cookie("access_token", path="/")
-    response.delete_cookie("refresh_token", path="/")
+    is_prod = settings.ENVIRONMENT == "production"
+    samesite = "none" if is_prod else "lax"
+    response.delete_cookie("access_token", path="/", samesite=samesite, secure=is_prod)
+    response.delete_cookie("refresh_token", path="/api/auth/refresh", samesite=samesite, secure=is_prod)
     return {"message": "Logged out successfully"}
 
 
@@ -176,19 +178,22 @@ def delete_account(
     """Permanently delete the user account and all data."""
     db.delete(current_user)
     db.commit()
-    response.delete_cookie("access_token", path="/")
-    response.delete_cookie("refresh_token", path="/")
+    is_prod = settings.ENVIRONMENT == "production"
+    samesite = "none" if is_prod else "lax"
+    response.delete_cookie("access_token", path="/", samesite=samesite, secure=is_prod)
+    response.delete_cookie("refresh_token", path="/api/auth/refresh", samesite=samesite, secure=is_prod)
 
 
 def _set_auth_cookies(response: Response, access_token: str, refresh_token: str) -> None:
     """Helper to set httpOnly auth cookies."""
     is_prod = settings.ENVIRONMENT == "production"
+    samesite = "none" if is_prod else "lax"
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         secure=is_prod,
-        samesite="lax",
+        samesite=samesite,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
@@ -197,7 +202,7 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str)
         value=refresh_token,
         httponly=True,
         secure=is_prod,
-        samesite="lax",
+        samesite=samesite,
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
         path="/api/auth/refresh",
     )
