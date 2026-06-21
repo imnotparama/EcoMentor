@@ -12,8 +12,8 @@ export const formatError = (err: unknown, fallback: string): string => {
   }
   if (Array.isArray(detail)) {
     return detail
-      .map((d: any) => {
-        const field = d.loc ? d.loc[d.loc.length - 1] : ''
+      .map((d: { loc?: string[], msg?: string }) => {
+        const field = d.loc && d.loc.length > 0 ? d.loc[d.loc.length - 1] : ''
         return field ? `${field}: ${d.msg}` : d.msg
       })
       .join(', ')

@@ -3,7 +3,6 @@ Integration tests for auth endpoints and health check.
 Uses the TestClient + in-memory SQLite DB from conftest.py.
 """
 
-import pytest
 from fastapi.testclient import TestClient
 
 

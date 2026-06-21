@@ -57,7 +57,7 @@ export default function Chat() {
   useEffect(() => {
     document.title = 'AI Coach — EcoMentor AI'
     loadHistory()
-  }, [])
+  }, [loadHistory])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

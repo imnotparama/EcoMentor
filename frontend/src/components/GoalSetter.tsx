@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Target, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
@@ -14,18 +14,15 @@ const PRESETS = [
 ]
 
 export default function GoalSetter({ currentMonthly }: GoalSetterProps) {
-  const [goal, setGoal] = useState<number | null>(null)
-  const [editing, setEditing] = useState(false)
-  const [inputVal, setInputVal] = useState('')
-
   const userId = useAuthStore((s) => s.user?.id)
   const storageKey = userId ? `ecomentor_goal_${userId}` : 'ecomentor_goal_guest'
 
-  useEffect(() => {
+  const [goal, setGoal] = useState<number | null>(() => {
     const saved = localStorage.getItem(storageKey)
-    if (saved) setGoal(Number(saved))
-    else setGoal(null)
-  }, [storageKey])
+    return saved ? Number(saved) : null
+  })
+  const [editing, setEditing] = useState(false)
+  const [inputVal, setInputVal] = useState('')
 
   const saveGoal = (value: number) => {
     setGoal(value)

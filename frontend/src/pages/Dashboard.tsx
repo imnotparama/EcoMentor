@@ -77,7 +77,7 @@ export default function Dashboard() {
   useEffect(() => {
     document.title = 'Dashboard — EcoMentor AI'
     refetch()
-  }, [])
+  }, [refetch])
 
   const handleCompleteChallenge = async (id: number) => {
     setCompletingId(id)

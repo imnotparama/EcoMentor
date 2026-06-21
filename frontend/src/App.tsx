@@ -3,16 +3,18 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useAuthStore } from '@/store/authStore'
 import AppShell from '@/components/layout/AppShell'
 
+import React, { Suspense } from 'react'
+
 // Pages
-import Landing from '@/pages/Landing'
-import AuthPage from '@/pages/AuthPage'
-import Onboarding from '@/pages/Onboarding'
-import Assessment from '@/pages/Assessment'
-import Dashboard from '@/pages/Dashboard'
-import Chat from '@/pages/Chat'
-import Progress from '@/pages/Progress'
-import Challenges from '@/pages/Challenges'
-import Settings from '@/pages/Settings'
+const Landing = React.lazy(() => import('@/pages/Landing'))
+const AuthPage = React.lazy(() => import('@/pages/AuthPage'))
+const Onboarding = React.lazy(() => import('@/pages/Onboarding'))
+const Assessment = React.lazy(() => import('@/pages/Assessment'))
+const Dashboard = React.lazy(() => import('@/pages/Dashboard'))
+const Chat = React.lazy(() => import('@/pages/Chat'))
+const Progress = React.lazy(() => import('@/pages/Progress'))
+const Challenges = React.lazy(() => import('@/pages/Challenges'))
+const Settings = React.lazy(() => import('@/pages/Settings'))
 
 function PageTransitionWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -22,7 +24,9 @@ function PageTransitionWrapper({ children }: { children: React.ReactNode }) {
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
     >
-      {children}
+      <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}><span className="spinner" style={{ width: 32, height: 32 }} /></div>}>
+        {children}
+      </Suspense>
     </motion.div>
   )
 }

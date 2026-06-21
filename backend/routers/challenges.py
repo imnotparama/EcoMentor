@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from auth_utils import get_current_user
 from database import get_db
-from models.db_models import Assessment, Challenge, User
+from models.db_models import Challenge, User
 from schemas.pydantic_schemas import ChallengeResponse
 from services.carbon_engine import get_highest_emission_category, EmissionResult
 from services.challenge_engine import generate_challenge_for_category
@@ -40,7 +40,7 @@ def get_active_challenges(
     """Get only active (incomplete) challenges."""
     challenges = (
         db.query(Challenge)
-        .filter(Challenge.user_id == current_user.id, Challenge.completed == False)
+        .filter(Challenge.user_id == current_user.id, Challenge.completed.is_(False))
         .order_by(Challenge.created_at.desc())
         .all()
     )
@@ -90,12 +90,8 @@ def generate_new_challenge(
 ):
     """Generate a new weekly challenge based on the user's highest emission category."""
     # Get latest assessment
-    assessment = (
-        db.query(Assessment)
-        .filter(Assessment.user_id == current_user.id, Assessment.is_complete == True)
-        .order_by(Assessment.created_at.desc())
-        .first()
-    )
+    from crud import get_latest_completed_assessment
+    assessment = get_latest_completed_assessment(db, current_user.id)
 
     if not assessment:
         raise HTTPException(
@@ -118,7 +114,7 @@ def generate_new_challenge(
     # Find active challenges to exclude duplicate generations
     active_challenges = (
         db.query(Challenge)
-        .filter(Challenge.user_id == current_user.id, Challenge.completed == False)
+        .filter(Challenge.user_id == current_user.id, Challenge.completed.is_(False))
         .all()
     )
     active_titles = [c.title for c in active_challenges]

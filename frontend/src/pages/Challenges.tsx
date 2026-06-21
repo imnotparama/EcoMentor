@@ -10,7 +10,7 @@ export default function Challenges() {
   useEffect(() => {
     document.title = 'Challenges — EcoMentor AI'
     load()
-  }, [])
+  }, [load])
 
   const active = challenges.filter((c) => !c.completed)
   const completed = challenges.filter((c) => c.completed)
@@ -28,10 +28,10 @@ export default function Challenges() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button onClick={load} className="btn btn-secondary btn-sm" aria-label="Refresh challenges">
+          <button onClick={() => load()} className="btn btn-secondary btn-sm" aria-label="Refresh challenges">
             <RefreshCw size={14} />
           </button>
-          <button onClick={generate} className="btn btn-primary btn-sm" id="btn-generate-challenge" aria-label="Generate a new challenge">
+          <button onClick={() => generate()} className="btn btn-primary btn-sm" id="btn-generate-challenge" aria-label="Generate a new challenge">
             <Plus size={15} />
             New Challenge
           </button>
@@ -79,7 +79,7 @@ export default function Challenges() {
           <p style={{ marginBottom: '2rem' }}>Complete your assessment first, then generate a personalized challenge.</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
             <Link to="/assessment" className="btn btn-secondary">Take Assessment</Link>
-            <button onClick={generate} className="btn btn-primary">Generate Challenge</button>
+            <button onClick={() => generate()} className="btn btn-primary">Generate Challenge</button>
           </div>
         </div>
       )}

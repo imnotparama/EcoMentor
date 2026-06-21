@@ -20,7 +20,6 @@ import json
 import logging
 from typing import Any
 
-import anthropic
 from sqlalchemy.orm import Session
 
 try:
@@ -29,7 +28,8 @@ except ImportError:
     genai = None
 
 from config import settings
-from models.db_models import Assessment, Challenge, ProgressEntry, Recommendation, User
+from models.db_models import ProgressEntry, User
+from crud import get_latest_completed_assessment
 from services.carbon_engine import INDIA_AVERAGE_MONTHLY_KG, GLOBAL_AVERAGE_MONTHLY_KG
 from services.challenge_engine import generate_challenge_for_category
 
@@ -153,12 +153,7 @@ def tool_get_user_assessment(user_id: str, db: Session) -> dict:
     except ValueError:
         return {"error": "Invalid user_id"}
 
-    assessment = (
-        db.query(Assessment)
-        .filter(Assessment.user_id == uid, Assessment.is_complete == True)
-        .order_by(Assessment.created_at.desc())
-        .first()
-    )
+    assessment = get_latest_completed_assessment(db, uid)
 
     if not assessment:
         return {"error": "No completed assessment found for this user"}
@@ -255,7 +250,7 @@ def tool_get_progress_history(user_id: str, months: int = 6, db: Session = None)
 def tool_generate_challenge(user_id: str, category: str, db: Session) -> dict:
     """Generate a personalized challenge for the user."""
     try:
-        uid = int(user_id)
+        _ = int(user_id)
     except ValueError:
         return {"error": "Invalid user_id"}
 

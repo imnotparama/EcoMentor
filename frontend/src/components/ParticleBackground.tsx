@@ -26,6 +26,9 @@ export default function ParticleBackground({ count = 25 }: { count?: number }) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) return
+
     const resize = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
@@ -94,10 +97,25 @@ export default function ParticleBackground({ count = 25 }: { count?: number }) {
       rafRef.current = requestAnimationFrame(animate)
     }
 
-    rafRef.current = requestAnimationFrame(animate)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (rafRef.current) cancelAnimationFrame(rafRef.current)
+        rafRef.current = undefined
+      } else {
+        if (!rafRef.current) {
+          rafRef.current = requestAnimationFrame(animate)
+        }
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    if (!document.hidden) {
+      rafRef.current = requestAnimationFrame(animate)
+    }
 
     return () => {
       window.removeEventListener('resize', resize)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
   }, [count])

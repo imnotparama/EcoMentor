@@ -4,7 +4,6 @@ Uses the agentic tool-calling loop for all responses.
 """
 
 import logging
-from datetime import datetime, timezone
 
 import anthropic
 from fastapi import APIRouter, Depends, HTTPException, Request, status

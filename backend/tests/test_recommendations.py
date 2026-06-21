@@ -4,9 +4,8 @@ Uses mocking to test the agentic loop without real API calls.
 """
 
 import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
-import pytest
 
 from services.carbon_engine import EmissionResult, get_highest_emission_category
 
@@ -61,7 +60,6 @@ class TestAgentToolExecution:
     def test_tool_get_user_assessment_with_no_assessment(self):
         """Should return error when user has no assessment."""
         from services.ai_agent import tool_get_user_assessment
-        from unittest.mock import MagicMock
 
         db = MagicMock()
         # tool_get_user_assessment uses a single .filter(cond1, cond2).order_by(...).first()
@@ -92,7 +90,6 @@ class TestAgentToolExecution:
     def test_tool_get_progress_history_no_data(self):
         """Should return empty list when no progress entries."""
         from services.ai_agent import tool_get_progress_history
-        from unittest.mock import MagicMock
 
         db = MagicMock()
         db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
@@ -104,7 +101,6 @@ class TestAgentToolExecution:
     def test_tool_invalid_user_id_returns_error(self):
         """Should handle invalid user_id gracefully."""
         from services.ai_agent import tool_get_user_assessment
-        from unittest.mock import MagicMock
 
         db = MagicMock()
         result = tool_get_user_assessment("not_a_number", db)
@@ -113,7 +109,6 @@ class TestAgentToolExecution:
     def test_execute_tool_dispatcher_unknown_tool(self):
         """Unknown tool name should return error."""
         from services.ai_agent import execute_tool
-        from unittest.mock import MagicMock
 
         db = MagicMock()
         result_str = execute_tool("unknown_tool_name", {}, db)

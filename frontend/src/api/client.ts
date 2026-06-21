@@ -31,9 +31,9 @@ apiClient.interceptors.request.use(
 )
 
 let isRefreshing = false
-let failedQueue: any[] = []
+let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = []
 
-const processQueue = (error: any) => {
+const processQueue = (error: unknown) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error)
@@ -62,7 +62,7 @@ apiClient.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({
             resolve: () => resolve(apiClient(originalRequest)),
-            reject: (err: any) => reject(err),
+            reject: (err: unknown) => reject(err),
           })
         })
       }

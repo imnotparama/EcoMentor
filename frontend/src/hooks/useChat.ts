@@ -1,62 +1,61 @@
 import { useState, useCallback } from 'react'
+import { useAsyncResource } from './useAsyncResource'
 import { chatApi } from '@/api/chat'
 import type { ChatMessage } from '@/api/types'
 
 export function useChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [isLoading, setIsLoading] = useState(false)
   const [isSending, setIsSending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [lastToolsCalled, setLastToolsCalled] = useState<string[]>([])
 
+  const { data: messages, isLoading, execute, setData, error: loadError } = useAsyncResource<ChatMessage[]>(
+    () => chatApi.getHistory(),
+    []
+  )
+
   const loadHistory = useCallback(async () => {
-    setIsLoading(true)
     try {
-      const history = await chatApi.getHistory()
-      setMessages(history)
+      await execute()
     } catch {
-      setError('Failed to load chat history')
-    } finally {
-      setIsLoading(false)
+      // Error handled by useAsyncResource
     }
-  }, [])
+  }, [execute])
+
+  const [sendError, setSendError] = useState<string | null>(null)
 
   const sendMessage = useCallback(async (content: string) => {
     setIsSending(true)
-    setError(null)
+    setSendError(null)
     setLastToolsCalled([])
 
-    // Optimistically add user message
     const tempUserMsg: ChatMessage = {
       id: Date.now(),
       role: 'user',
       content,
       created_at: new Date().toISOString(),
     }
-    setMessages((prev) => [...prev, tempUserMsg])
+    setData((prev) => [...(prev || []), tempUserMsg])
 
     try {
       const response = await chatApi.sendMessage(content)
-      setMessages((prev) => [
-        ...prev.filter((m) => m.id !== tempUserMsg.id),
+      setData((prev) => [
+        ...(prev || []).filter((m) => m.id !== tempUserMsg.id),
         response.user_message,
         response.assistant_message,
       ])
       setLastToolsCalled(response.tools_called ?? [])
     } catch (err: unknown) {
-      // Remove optimistic message on error
-      setMessages((prev) => prev.filter((m) => m.id !== tempUserMsg.id))
-      setError(err instanceof Error ? err.message : 'Failed to send message')
+      setData((prev) => (prev || []).filter((m) => m.id !== tempUserMsg.id))
+      setSendError(err instanceof Error ? err.message : 'Failed to send message')
     } finally {
       setIsSending(false)
     }
-  }, [])
+  }, [setData])
 
   const clearHistory = useCallback(async () => {
     await chatApi.clearHistory()
-    setMessages([])
+    setData([])
     setLastToolsCalled([])
-  }, [])
+  }, [setData])
 
-  return { messages, isLoading, isSending, error, lastToolsCalled, loadHistory, sendMessage, clearHistory }
+  return { messages: messages || [], isLoading, isSending, error: loadError || sendError, lastToolsCalled, loadHistory, sendMessage, clearHistory }
 }

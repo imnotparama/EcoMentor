@@ -2,23 +2,23 @@
 Progress router: timeline, cumulative savings, badges, and data export.
 """
 
-import json
 from datetime import datetime
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from auth_utils import get_current_user
-from database import get_db
-from models.db_models import Assessment, Challenge, ProgressEntry, Recommendation, User
-from routers.dashboard import compute_badges
+from services.dashboard_engine import compute_badges
+from crud import get_completed_assessments_count
 from schemas.pydantic_schemas import (
     AssessmentResponse,
     ChallengeResponse,
     ProgressEntryResponse,
     ProgressResponse,
 )
+from database import get_db
+from models.db_models import User, ProgressEntry, Challenge, Assessment, Recommendation
+from auth_utils import get_current_user
 
 router = APIRouter(prefix="/api/progress", tags=["progress"])
 
@@ -40,21 +40,23 @@ def get_progress(
 
     completed_challenges = (
         db.query(Challenge)
-        .filter(Challenge.user_id == current_user.id, Challenge.completed == True)
+        .filter(Challenge.user_id == current_user.id, Challenge.completed.is_(True))
         .order_by(Challenge.completed_at.desc())
         .all()
     )
 
-    total_assessments = (
-        db.query(Assessment)
-        .filter(Assessment.user_id == current_user.id, Assessment.is_complete == True)
-        .count()
-    )
+    total_assessments = get_completed_assessments_count(db, current_user.id)
 
-    # Cumulative CO2 saved vs. India average
-    cumulative_saved = sum(
-        max(0, INDIA_MONTHLY - e.total_monthly) for e in entries
-    )
+    # Cumulative CO2 saved vs. India average using SQL aggregate
+    from sqlalchemy import func, case
+    cumulative_saved = db.query(
+        func.sum(
+            case(
+                (ProgressEntry.total_monthly < INDIA_MONTHLY, INDIA_MONTHLY - ProgressEntry.total_monthly),
+                else_=0.0
+            )
+        )
+    ).filter(ProgressEntry.user_id == current_user.id).scalar() or 0.0
 
     # Latest sustainability score for badge computation
     latest_score = entries[-1].sustainability_score if entries else 0.0

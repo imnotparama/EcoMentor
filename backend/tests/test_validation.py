@@ -9,9 +9,7 @@ from schemas.pydantic_schemas import (
     AssessmentCreate,
     EnergyData,
     FoodData,
-    ShoppingData,
     TransportData,
-    UserLogin,
     UserRegister,
     WasteData,
 )

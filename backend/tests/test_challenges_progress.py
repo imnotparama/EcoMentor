@@ -4,8 +4,6 @@ Integration tests for challenges and progress endpoints.
 
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from models.db_models import Assessment, Challenge, ProgressEntry, User
-from services.carbon_engine import calculate_all_emissions, TransportInput, EnergyInput, FoodInput, ShoppingInput, WasteInput
 
 
 def _setup_authenticated_user(client: TestClient) -> dict:

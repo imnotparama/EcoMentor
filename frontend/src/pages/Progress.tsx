@@ -27,7 +27,7 @@ export default function Progress() {
     document.title = 'Progress — EcoMentor AI'
     load()
     loadChallenges()
-  }, [])
+  }, [load, loadChallenges])
 
   if (isLoading && !data) {
     return (

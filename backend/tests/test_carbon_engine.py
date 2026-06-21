@@ -2,7 +2,6 @@
 Tests for the carbon engine — pure calculation logic, no DB required.
 """
 
-import pytest
 
 from services.carbon_engine import (
     EnergyInput,

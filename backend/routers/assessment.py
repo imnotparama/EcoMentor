@@ -2,8 +2,6 @@
 Assessment router: multi-step wizard save, retrieval, and AI analysis trigger.
 """
 
-import asyncio
-import json
 import logging
 from datetime import datetime
 
@@ -37,7 +35,7 @@ def _get_or_create_draft(user_id: int, db: Session) -> Assessment:
     """Get the latest incomplete assessment, or create a new one."""
     draft = (
         db.query(Assessment)
-        .filter(Assessment.user_id == user_id, Assessment.is_complete == False)
+        .filter(Assessment.user_id == user_id, Assessment.is_complete.is_(False))
         .order_by(Assessment.created_at.desc())
         .first()
     )
@@ -106,7 +104,7 @@ def complete_assessment(
     """
     draft = (
         db.query(Assessment)
-        .filter(Assessment.user_id == current_user.id, Assessment.is_complete == False)
+        .filter(Assessment.user_id == current_user.id, Assessment.is_complete.is_(False))
         .order_by(Assessment.created_at.desc())
         .first()
     )
@@ -220,7 +218,7 @@ def complete_assessment(
     highest_category = get_highest_emission_category(result)
     active_challenges = (
         db.query(Challenge)
-        .filter(Challenge.user_id == current_user.id, Challenge.completed == False)
+        .filter(Challenge.user_id == current_user.id, Challenge.completed.is_(False))
         .all()
     )
     active_titles = [c.title for c in active_challenges]
@@ -294,12 +292,8 @@ def get_current_assessment(
     current_user: User = Depends(get_current_user),
 ):
     """Get the user's latest completed assessment."""
-    assessment = (
-        db.query(Assessment)
-        .filter(Assessment.user_id == current_user.id, Assessment.is_complete == True)
-        .order_by(Assessment.created_at.desc())
-        .first()
-    )
+    from crud import get_latest_completed_assessment
+    assessment = get_latest_completed_assessment(db, current_user.id)
     if not assessment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -316,7 +310,7 @@ def get_draft_assessment(
     """Get the user's current draft (incomplete) assessment."""
     draft = (
         db.query(Assessment)
-        .filter(Assessment.user_id == current_user.id, Assessment.is_complete == False)
+        .filter(Assessment.user_id == current_user.id, Assessment.is_complete.is_(False))
         .order_by(Assessment.created_at.desc())
         .first()
     )
