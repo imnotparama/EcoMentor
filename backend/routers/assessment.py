@@ -255,14 +255,21 @@ async def _run_ai_analysis_background(user_id: int, assessment_id: int) -> None:
         logger.warning("Neither ANTHROPIC_API_KEY nor GEMINI_API_KEY is set — skipping AI analysis")
         return
 
-    db = SessionLocal()
+    # 1. Fetch data and generate recommendations (using a short-lived DB session for reading)
+    db_read = SessionLocal()
     try:
         client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
-        report = await generate_assessment_recommendations(user_id, db, client)
+        report = await generate_assessment_recommendations(user_id, db_read, client)
+    except Exception as e:
+        logger.error(f"AI analysis failed for user {user_id} during generation: {e}")
+        return
+    finally:
+        db_read.close()
 
-        # Parse and store recommendations (simplified — store full report as one entry)
-        # In production you'd parse the structured output
-        assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
+    # 2. Store the recommendations (using a short-lived DB session for writing)
+    db_write = SessionLocal()
+    try:
+        assessment = db_write.query(Assessment).filter(Assessment.id == assessment_id).first()
         if assessment:
             rec = Recommendation(
                 user_id=user_id,
@@ -272,13 +279,13 @@ async def _run_ai_analysis_background(user_id: int, assessment_id: int) -> None:
                 description=report,
                 impact_kg_monthly=0.0,
             )
-            db.add(rec)
-            db.commit()
+            db_write.add(rec)
+            db_write.commit()
             logger.info(f"AI analysis stored for user {user_id}")
     except Exception as e:
-        logger.error(f"AI analysis failed for user {user_id}: {e}")
+        logger.error(f"AI analysis failed for user {user_id} during saving: {e}")
     finally:
-        db.close()
+        db_write.close()
 
 
 @router.get("/current", response_model=AssessmentResponse)

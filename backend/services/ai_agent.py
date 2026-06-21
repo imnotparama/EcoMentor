@@ -496,16 +496,41 @@ async def generate_assessment_recommendations(
 ) -> str:
     """
     Autonomously generate a RecommendationReport after assessment completion.
-
-    The agent will:
-    1. Call get_user_assessment
-    2. Call get_emission_benchmarks
-    3. Optionally call get_progress_history and generate_challenge
-    4. Return a structured recommendation report
+    Fetches the necessary data upfront and makes a single direct LLM call
+    to maximize speed, avoid agent loop latency, and prevent database locking.
     """
-    prompt = f"""A user (ID: {user_id}) has just completed their carbon footprint assessment.
+    # 1. Fetch data upfront using synchronous tools (very fast DB query)
+    assessment_data = tool_get_user_assessment(str(user_id), db)
+    benchmarks_data = tool_get_emission_benchmarks("all")
+    progress_data = tool_get_progress_history(str(user_id), 6, db)
 
-Please analyze their data and generate a comprehensive RecommendationReport that includes:
+    # 2. Build the detailed user prompt with context
+    data_context = f"""
+### USER PROFILE & LATEST ASSESSMENT DATA:
+{json.dumps(assessment_data, indent=2)}
+
+### NATIONAL & GLOBAL BENCHMARKS (kg CO2/month):
+{json.dumps(benchmarks_data, indent=2)}
+
+### HISTORICAL PROGRESS (last 6 months):
+{json.dumps(progress_data, indent=2)}
+"""
+
+    system_prompt = """You are EcoMentor, an expert AI sustainability coach with deep knowledge of carbon footprints, climate science, and behavioral change. You help users understand their environmental impact and take meaningful action.
+
+Your task is to analyze the user's carbon assessment and historical progress data, comparing them to benchmarks, and generate a comprehensive, personalized RecommendationReport.
+
+Your communication style:
+- Empowering, not guilt-inducing
+- Specific and data-driven (cite actual kg CO2 numbers)
+- Practical (give actionable, realistic advice for India)
+- Warm and encouraging
+
+Format your responses in clear markdown with headers, bullet points, and bold numbers."""
+
+    prompt = f"""{data_context}
+
+Please analyze the user's data above and generate a comprehensive RecommendationReport that includes:
 
 1. **Top 3 Reduction Opportunities** — ranked by CO2 impact, with specific kg CO2 savings per month
 2. **Contextual Analysis** — how does their footprint compare to India and global averages by category?
@@ -514,12 +539,38 @@ Please analyze their data and generate a comprehensive RecommendationReport that
 
 Be specific with numbers. Reference their actual data throughout. Make the roadmap achievable and realistic."""
 
-    # generate_assessment_recommendations only needs the text portion
-    text, _ = await run_agent_loop(
-        user_id=user_id,
-        user_message=prompt,
-        conversation_history=[],
-        db=db,
-        anthropic_client=anthropic_client,
-    )
-    return text
+    # 3. Direct LLM Call
+    try:
+        if settings.GEMINI_API_KEY:
+            if not genai:
+                raise ImportError("google-generativeai package is not installed.")
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model = genai.GenerativeModel(
+                model_name="gemini-2.5-flash",
+                generation_config={"temperature": 0.2},
+                system_instruction=system_prompt,
+            )
+            # Run blocking Gemini SDK call in a separate thread to keep the event loop responsive
+            response = await asyncio.to_thread(model.generate_content, prompt)
+            return response.text
+
+        elif anthropic_client:
+            response = await anthropic_client.messages.create(
+                model=settings.ANTHROPIC_MODEL,
+                max_tokens=4096,
+                system=system_prompt,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            text_blocks = [
+                block.text
+                for block in response.content
+                if hasattr(block, "text")
+            ]
+            return "\n".join(text_blocks)
+
+        else:
+            return "No AI keys configured. Here are your recommendations: Try to reduce your travel distance, save electricity, and eat more plant-based meals!"
+
+    except Exception as e:
+        logger.error(f"Error generating AI recommendations: {e}")
+        return f"I encountered an issue generating your detailed recommendations. Please try again. Error detail: {str(e)}"
