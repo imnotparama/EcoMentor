@@ -103,6 +103,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Inject security headers on every response."""
 
     async def dispatch(self, request: Request, call_next) -> Response:
+        """Add strict security headers to the outgoing response."""
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
@@ -159,6 +160,7 @@ def root():
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    """Handle all otherwise uncaught exceptions globally and return 500 JSON response."""
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,

@@ -53,6 +53,7 @@ def client(db: Session) -> TestClient:
     """FastAPI TestClient with the test DB injected."""
 
     def override_get_db():
+        """Docstring for function override_get_db."""
         try:
             yield db
         finally:

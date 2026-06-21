@@ -68,6 +68,7 @@ WEEKS_PER_MONTH: float = 4.33
 
 @dataclass
 class TransportInput:
+    """Docstring for class TransportInput."""
     daily_distance_km: float
     vehicle_type: str  # car | bike | ev | public_transport | none
     fuel_type: str     # petrol | diesel | electric | hybrid | none
@@ -76,6 +77,7 @@ class TransportInput:
 
 @dataclass
 class EnergyInput:
+    """Docstring for class EnergyInput."""
     monthly_electricity_kwh: float
     daily_ac_hours: float
     renewable_energy: str  # yes | partial | no
@@ -83,24 +85,28 @@ class EnergyInput:
 
 @dataclass
 class FoodInput:
+    """Docstring for class FoodInput."""
     diet_type: str   # vegan | vegetarian | mixed | meat_heavy
     weekly_meat_meals: int
 
 
 @dataclass
 class ShoppingInput:
+    """Docstring for class ShoppingInput."""
     monthly_online_purchases: int
     monthly_new_clothing: int
 
 
 @dataclass
 class WasteInput:
+    """Docstring for class WasteInput."""
     recycling_habit: str   # always | sometimes | never
     weekly_waste_kg: float
 
 
 @dataclass
 class EmissionResult:
+    """Docstring for class EmissionResult."""
     transport_emissions_monthly: float
     energy_emissions_monthly: float
     food_emissions_monthly: float

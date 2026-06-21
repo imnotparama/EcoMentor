@@ -88,6 +88,7 @@ PROGRESS_FACTORS = {
 
 
 def create_seed_data():
+    """Docstring for function create_seed_data."""
     db = SessionLocal()
     try:
         print("🌱 Creating seed data for EcoMentor AI...")
@@ -245,6 +246,7 @@ def create_seed_data():
 
 
 def _generate_demo_recommendation(profile: str, result) -> str:
+    """Docstring for function _generate_demo_recommendation."""
     if profile == "low":
         return f"""## 🌿 Your Sustainability Analysis
 
@@ -299,6 +301,7 @@ Your monthly footprint is **{result.total_monthly:.0f} kg CO2** — significantl
 
 
 def _generate_demo_chat_response(profile: str, result) -> str:
+    """Docstring for function _generate_demo_chat_response."""
     if profile == "high":
         biggest = "energy"
         biggest_val = result.energy_emissions_monthly

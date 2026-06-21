@@ -18,16 +18,19 @@ from models.db_models import User
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plain text password against a bcrypt hashed password."""
     pw_bytes = plain_password.encode("utf-8")[:72]
     return bcrypt.checkpw(pw_bytes, hashed_password.encode("utf-8"))
 
 
 def hash_password(password: str) -> str:
+    """Hash a password using bcrypt and return the decoded string."""
     pw_bytes = password.encode("utf-8")[:72]
     return bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Create a JWT access token with user payload and expiration."""
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -37,6 +40,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 def create_refresh_token(data: dict) -> str:
+    """Create a JWT refresh token with user payload and long-term expiration."""
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode.update({"exp": expire, "type": "refresh"})
@@ -44,6 +48,7 @@ def create_refresh_token(data: dict) -> str:
 
 
 def decode_token(token: str) -> dict:
+    """Decode and validate a JWT token, raising HTTPException if invalid."""
     try:
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError:
@@ -98,6 +103,7 @@ def get_current_user(
 
 
 def get_rate_limit_key(request: Request) -> str:
+    """Return a rate-limit key based on authenticated user ID or fallback to remote IP."""
     token = request.cookies.get("access_token")
     if token:
         try:

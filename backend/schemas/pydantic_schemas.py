@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 # ──────────────────────────────────────────────
 
 class UserRegister(BaseModel):
+    """Docstring for class UserRegister."""
     model_config = ConfigDict(extra="forbid")
 
     email: EmailStr
@@ -22,6 +23,7 @@ class UserRegister(BaseModel):
     @field_validator("password")
     @classmethod
     def validate_password_complexity(cls, v: str) -> str:
+        """Docstring for function validate_password_complexity."""
         has_letter = any(c.isalpha() for c in v)
         has_digit = any(c.isdigit() for c in v)
         if not has_letter or not has_digit:
@@ -32,6 +34,7 @@ class UserRegister(BaseModel):
 
 
 class UserLogin(BaseModel):
+    """Docstring for class UserLogin."""
     model_config = ConfigDict(extra="forbid")
 
     email: EmailStr
@@ -39,6 +42,7 @@ class UserLogin(BaseModel):
 
 
 class UserResponse(BaseModel):
+    """Docstring for class UserResponse."""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -51,12 +55,14 @@ class UserResponse(BaseModel):
 
 
 class TokenResponse(BaseModel):
+    """Docstring for class TokenResponse."""
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
 
 
 class ProfileUpdate(BaseModel):
+    """Docstring for class ProfileUpdate."""
     model_config = ConfigDict(extra="forbid")
 
     name: Optional[str] = Field(None, min_length=1, max_length=100)
@@ -77,6 +83,7 @@ VALID_RECYCLING = {"always", "sometimes", "never"}
 
 
 class TransportData(BaseModel):
+    """Docstring for class TransportData."""
     model_config = ConfigDict(extra="forbid")
 
     daily_distance_km: float = Field(ge=0, le=2000)
@@ -87,6 +94,7 @@ class TransportData(BaseModel):
     @field_validator("vehicle_type")
     @classmethod
     def validate_vehicle_type(cls, v: str) -> str:
+        """Docstring for function validate_vehicle_type."""
         if v not in VALID_VEHICLE_TYPES:
             raise ValueError(f"vehicle_type must be one of {VALID_VEHICLE_TYPES}")
         return v
@@ -94,12 +102,14 @@ class TransportData(BaseModel):
     @field_validator("fuel_type")
     @classmethod
     def validate_fuel_type(cls, v: str) -> str:
+        """Docstring for function validate_fuel_type."""
         if v not in VALID_FUEL_TYPES:
             raise ValueError(f"fuel_type must be one of {VALID_FUEL_TYPES}")
         return v
 
 
 class EnergyData(BaseModel):
+    """Docstring for class EnergyData."""
     model_config = ConfigDict(extra="forbid")
 
     monthly_electricity_kwh: float = Field(ge=0, le=100000)
@@ -109,12 +119,14 @@ class EnergyData(BaseModel):
     @field_validator("renewable_energy")
     @classmethod
     def validate_renewable(cls, v: str) -> str:
+        """Docstring for function validate_renewable."""
         if v not in VALID_RENEWABLE:
             raise ValueError(f"renewable_energy must be one of {VALID_RENEWABLE}")
         return v
 
 
 class FoodData(BaseModel):
+    """Docstring for class FoodData."""
     model_config = ConfigDict(extra="forbid")
 
     diet_type: str
@@ -123,12 +135,14 @@ class FoodData(BaseModel):
     @field_validator("diet_type")
     @classmethod
     def validate_diet(cls, v: str) -> str:
+        """Docstring for function validate_diet."""
         if v not in VALID_DIET_TYPES:
             raise ValueError(f"diet_type must be one of {VALID_DIET_TYPES}")
         return v
 
 
 class ShoppingData(BaseModel):
+    """Docstring for class ShoppingData."""
     model_config = ConfigDict(extra="forbid")
 
     monthly_online_purchases: int = Field(ge=0, le=500)
@@ -136,6 +150,7 @@ class ShoppingData(BaseModel):
 
 
 class WasteData(BaseModel):
+    """Docstring for class WasteData."""
     model_config = ConfigDict(extra="forbid")
 
     recycling_habit: str
@@ -144,12 +159,14 @@ class WasteData(BaseModel):
     @field_validator("recycling_habit")
     @classmethod
     def validate_recycling(cls, v: str) -> str:
+        """Docstring for function validate_recycling."""
         if v not in VALID_RECYCLING:
             raise ValueError(f"recycling_habit must be one of {VALID_RECYCLING}")
         return v
 
 
 class AssessmentCreate(BaseModel):
+    """Docstring for class AssessmentCreate."""
     model_config = ConfigDict(extra="forbid")
 
     transport: Optional[TransportData] = None
@@ -161,6 +178,7 @@ class AssessmentCreate(BaseModel):
 
 
 class AssessmentResponse(BaseModel):
+    """Docstring for class AssessmentResponse."""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -198,6 +216,7 @@ class AssessmentResponse(BaseModel):
 # ──────────────────────────────────────────────
 
 class RecommendationResponse(BaseModel):
+    """Docstring for class RecommendationResponse."""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -213,6 +232,7 @@ class RecommendationResponse(BaseModel):
 # ──────────────────────────────────────────────
 
 class ChallengeResponse(BaseModel):
+    """Docstring for class ChallengeResponse."""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -227,6 +247,7 @@ class ChallengeResponse(BaseModel):
 
 
 class CompleteChallenge(BaseModel):
+    """Docstring for class CompleteChallenge."""
     model_config = ConfigDict(extra="forbid")
 
     challenge_id: int = Field(ge=1)
@@ -237,12 +258,14 @@ class CompleteChallenge(BaseModel):
 # ──────────────────────────────────────────────
 
 class ChatMessageRequest(BaseModel):
+    """Docstring for class ChatMessageRequest."""
     model_config = ConfigDict(extra="forbid")
 
     message: str = Field(min_length=1, max_length=4000)
 
 
 class ChatMessageResponse(BaseModel):
+    """Docstring for class ChatMessageResponse."""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -252,6 +275,7 @@ class ChatMessageResponse(BaseModel):
 
 
 class ChatResponse(BaseModel):
+    """Docstring for class ChatResponse."""
     user_message: ChatMessageResponse
     assistant_message: ChatMessageResponse
     tools_called: list[str] = []  # Agentic transparency: which tools Claude invoked
@@ -262,6 +286,7 @@ class ChatResponse(BaseModel):
 # ──────────────────────────────────────────────
 
 class BenchmarkData(BaseModel):
+    """Docstring for class BenchmarkData."""
     india_average_monthly: float = 1900.0
     global_average_monthly: float = 3333.0
     category_india_averages: dict[str, float] = {
@@ -274,6 +299,7 @@ class BenchmarkData(BaseModel):
 
 
 class DashboardResponse(BaseModel):
+    """Docstring for class DashboardResponse."""
     user: UserResponse
     latest_assessment: Optional[AssessmentResponse]
     recommendations: list[RecommendationResponse]
@@ -289,6 +315,7 @@ class DashboardResponse(BaseModel):
 # ──────────────────────────────────────────────
 
 class ProgressEntryResponse(BaseModel):
+    """Docstring for class ProgressEntryResponse."""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -304,6 +331,7 @@ class ProgressEntryResponse(BaseModel):
 
 
 class ProgressResponse(BaseModel):
+    """Docstring for class ProgressResponse."""
     entries: list[ProgressEntryResponse]
     cumulative_co2_saved: float
     completed_challenges: list[ChallengeResponse]
@@ -316,5 +344,6 @@ class ProgressResponse(BaseModel):
 # ──────────────────────────────────────────────
 
 class HealthResponse(BaseModel):
+    """Docstring for class HealthResponse."""
     status: str
     version: str

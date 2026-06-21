@@ -12,6 +12,8 @@ _INSECURE_DEFAULT_KEY = "change_me_in_production_please"
 
 
 class Settings(BaseSettings):
+    """Application settings, loaded from environment variables and dotenv configurations."""
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     DATABASE_URL: str = "sqlite:///./ecomentorAI.db"
@@ -28,6 +30,7 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def warn_insecure_secret(self) -> "Settings":
+        """Raise error in production or warn in development if default SECRET_KEY is used."""
         if self.SECRET_KEY == _INSECURE_DEFAULT_KEY:
             if self.ENVIRONMENT == "production":
                 raise ValueError(

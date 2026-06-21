@@ -1,1 +1,3 @@
-# EcoMentor AI Backend Package
+"""
+SQLAlchemy ORM models package for EcoMentor AI.
+"""

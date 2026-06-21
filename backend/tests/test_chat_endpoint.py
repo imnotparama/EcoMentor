@@ -31,14 +31,19 @@ def test_chat_endpoint_success(client: TestClient, db: Session, monkeypatch):
 
     # Mock response object structural contract matching Claude's messages response
     class MockBlock:
+        """Docstring for class MockBlock."""
         def __init__(self, text):
+            """Docstring for function __init__."""
             self.text = text
         @property
         def type(self):
+            """Docstring for function type."""
             return "text"
 
     class MockResponse:
+        """Docstring for class MockResponse."""
         def __init__(self, text):
+            """Docstring for function __init__."""
             self.stop_reason = "end_turn"
             self.content = [MockBlock(text)]
 

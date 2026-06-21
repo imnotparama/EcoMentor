@@ -1,1 +1,3 @@
-# EcoMentor AI Backend Package
+"""
+Regression and integration tests package for EcoMentor AI.
+"""

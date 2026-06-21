@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 
 
 class TestHealthEndpoint:
+    """Docstring for class TestHealthEndpoint."""
     def test_health_returns_ok(self, client: TestClient):
         """GET /health should always return 200 with status 'ok'."""
         response = client.get("/health")
@@ -26,6 +27,7 @@ class TestHealthEndpoint:
 
 
 class TestRegisterEndpoint:
+    """Docstring for class TestRegisterEndpoint."""
     def test_register_success(self, client: TestClient):
         """POST /api/auth/register with valid data should return 201 + token."""
         response = client.post(
@@ -98,7 +100,9 @@ class TestRegisterEndpoint:
 
 
 class TestLoginEndpoint:
+    """Docstring for class TestLoginEndpoint."""
     def _register_user(self, client: TestClient, email: str, password: str, name: str):
+        """Docstring for function _register_user."""
         client.post(
             "/api/auth/register",
             json={"email": email, "password": password, "name": name},
@@ -135,6 +139,7 @@ class TestLoginEndpoint:
 
 
 class TestMeEndpoint:
+    """Docstring for class TestMeEndpoint."""
     def test_get_me_unauthenticated_returns_401(self, client: TestClient):
         """GET /api/auth/me without a token should return 401."""
         response = client.get("/api/auth/me")
@@ -168,6 +173,7 @@ class TestMeEndpoint:
 
 
 class TestSecurityHeaders:
+    """Docstring for class TestSecurityHeaders."""
     def test_security_headers_present(self, client: TestClient):
         """All responses should include critical security headers."""
         response = client.get("/health")
@@ -175,3 +181,63 @@ class TestSecurityHeaders:
         assert response.headers.get("x-frame-options") == "DENY"
         assert response.headers.get("x-xss-protection") == "1; mode=block"
         assert response.headers.get("referrer-policy") == "strict-origin-when-cross-origin"
+
+
+class TestAuthActions:
+    """Tests for logout, profile updates, and account deletion endpoints."""
+
+    def test_logout_clears_cookies(self, client: TestClient):
+        """POST /api/auth/logout should clear cookies."""
+        response = client.post("/api/auth/logout")
+        assert response.status_code == 200
+        assert "access_token" not in client.cookies
+        assert "refresh_token" not in client.cookies
+
+    def test_update_profile(self, client: TestClient):
+        """PATCH /api/auth/profile should update profile fields."""
+        client.post(
+            "/api/auth/register",
+            json={"email": "profile_up@example.com", "password": "Password123", "name": "Initial Name"},
+        )
+        login_resp = client.post(
+            "/api/auth/login",
+            json={"email": "profile_up@example.com", "password": "Password123"},
+        )
+        token = login_resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        patch_resp = client.patch(
+            "/api/auth/profile",
+            json={"name": "New Name", "city": "Mumbai", "age": 30, "household_size": 3},
+            headers=headers,
+        )
+        assert patch_resp.status_code == 200
+        data = patch_resp.json()
+        assert data["name"] == "New Name"
+        assert data["city"] == "Mumbai"
+        assert data["age"] == 30
+        assert data["household_size"] == 3
+
+    def test_delete_account(self, client: TestClient):
+        """DELETE /api/auth/account should delete the user account."""
+        client.post(
+            "/api/auth/register",
+            json={"email": "del_acc@example.com", "password": "Password123", "name": "To Delete"},
+        )
+        login_resp = client.post(
+            "/api/auth/login",
+            json={"email": "del_acc@example.com", "password": "Password123"},
+        )
+        token = login_resp.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        del_resp = client.delete("/api/auth/account", headers=headers)
+        assert del_resp.status_code == 204
+
+        # Login should now fail
+        login2_resp = client.post(
+            "/api/auth/login",
+            json={"email": "del_acc@example.com", "password": "Password123"},
+        )
+        assert login2_resp.status_code == 401
+

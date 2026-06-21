@@ -12,6 +12,7 @@ from services.carbon_engine import EmissionResult, get_highest_emission_category
 
 
 class TestHighestCategoryIdentification:
+    """Docstring for class TestHighestCategoryIdentification."""
     def test_highest_category_identified_correctly(self):
         """Should identify energy as highest when energy >> others."""
         result = EmissionResult(
@@ -56,6 +57,7 @@ class TestHighestCategoryIdentification:
 
 
 class TestAgentToolExecution:
+    """Docstring for class TestAgentToolExecution."""
     def test_tool_get_user_assessment_with_no_assessment(self):
         """Should return error when user has no assessment."""
         from services.ai_agent import tool_get_user_assessment
@@ -120,6 +122,7 @@ class TestAgentToolExecution:
 
 
 class TestRecommendationsReferenceUserData:
+    """Docstring for class TestRecommendationsReferenceUserData."""
     def test_recommendations_stored_after_assessment(self):
         """Recommendations should reference the user's actual assessment data."""
         # Test that recommendations are tied to specific assessment
@@ -140,6 +143,7 @@ class TestRecommendationsReferenceUserData:
 
 
 class TestChallengeGeneration:
+    """Docstring for class TestChallengeGeneration."""
     def test_challenge_generated_for_valid_category(self):
         """Should generate a challenge for each valid category."""
         from services.challenge_engine import generate_challenge_for_category

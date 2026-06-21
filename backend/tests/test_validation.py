@@ -18,6 +18,7 @@ from schemas.pydantic_schemas import (
 
 
 class TestNegativeDistanceRejected:
+    """Docstring for class TestNegativeDistanceRejected."""
     def test_negative_distance_rejected(self):
         """Negative daily distance should raise ValidationError."""
         with pytest.raises(ValidationError) as exc_info:
@@ -41,6 +42,7 @@ class TestNegativeDistanceRejected:
 
 
 class TestInvalidDietTypeRejected:
+    """Docstring for class TestInvalidDietTypeRejected."""
     def test_invalid_diet_type_rejected(self):
         """Diet type not in allowed values should raise ValidationError."""
         with pytest.raises(ValidationError):
@@ -68,6 +70,7 @@ class TestInvalidDietTypeRejected:
 
 
 class TestMissingRequiredFieldsRejected:
+    """Docstring for class TestMissingRequiredFieldsRejected."""
     def test_missing_required_email(self):
         """Missing email should raise ValidationError."""
         with pytest.raises(ValidationError):
@@ -94,6 +97,7 @@ class TestMissingRequiredFieldsRejected:
 
 
 class TestSQLInjectionInputSanitized:
+    """Docstring for class TestSQLInjectionInputSanitized."""
     def test_sql_injection_in_diet_type_rejected(self):
         """SQL injection attempt in diet_type should be rejected by validator."""
         malicious_inputs = [
@@ -146,6 +150,7 @@ class TestSQLInjectionInputSanitized:
 
 
 class TestAssessmentCreateValidation:
+    """Docstring for class TestAssessmentCreateValidation."""
     def test_valid_partial_assessment_allowed(self):
         """Partial assessment (only some sections) should be valid."""
         data = AssessmentCreate(

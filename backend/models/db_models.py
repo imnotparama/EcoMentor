@@ -12,10 +12,12 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
+    """Docstring for class Base."""
     pass
 
 
 class User(Base):
+    """Docstring for class User."""
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -50,6 +52,7 @@ class User(Base):
 
 
 class Assessment(Base):
+    """Docstring for class Assessment."""
     __tablename__ = "assessments"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -108,6 +111,7 @@ class Assessment(Base):
 
 
 class Recommendation(Base):
+    """Docstring for class Recommendation."""
     __tablename__ = "recommendations"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -125,6 +129,7 @@ class Recommendation(Base):
 
 
 class Challenge(Base):
+    """Docstring for class Challenge."""
     __tablename__ = "challenges"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -143,6 +148,7 @@ class Challenge(Base):
 
 
 class ChatMessage(Base):
+    """Docstring for class ChatMessage."""
     __tablename__ = "chat_messages"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -161,6 +167,7 @@ class ChatMessage(Base):
 
 
 class ProgressEntry(Base):
+    """Docstring for class ProgressEntry."""
     __tablename__ = "progress_entries"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)

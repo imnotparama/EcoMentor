@@ -1,1 +1,3 @@
-# EcoMentor AI Backend Package
+"""
+FastAPI route handlers package for EcoMentor AI.
+"""

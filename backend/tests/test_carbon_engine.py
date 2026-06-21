@@ -22,6 +22,7 @@ from services.carbon_engine import (
 
 
 class TestTransportEmissions:
+    """Docstring for class TestTransportEmissions."""
     def test_transport_emissions_car_petrol(self):
         """Car petrol should produce 0.21 kg CO2/km × distance × days."""
         data = TransportInput(
@@ -83,6 +84,7 @@ class TestTransportEmissions:
 
 
 class TestEnergyEmissions:
+    """Docstring for class TestEnergyEmissions."""
     def test_electricity_emissions_scale_linearly(self):
         """Doubling kWh should roughly double emissions."""
         low = EnergyInput(monthly_electricity_kwh=100.0, daily_ac_hours=0.0, renewable_energy="no")
@@ -102,6 +104,7 @@ class TestEnergyEmissions:
 
 
 class TestFoodEmissions:
+    """Docstring for class TestFoodEmissions."""
     def test_vegan_lower_than_meat_heavy(self):
         """Vegan diet should have much lower emissions than meat-heavy."""
         vegan = FoodInput(diet_type="vegan", weekly_meat_meals=0)
@@ -126,6 +129,7 @@ class TestFoodEmissions:
 
 
 class TestShoppingEmissions:
+    """Docstring for class TestShoppingEmissions."""
     def test_shopping_emissions_additive(self):
         """Online purchases and clothing items should both contribute to total."""
         online_only = ShoppingInput(monthly_online_purchases=10, monthly_new_clothing=0)
@@ -144,6 +148,7 @@ class TestShoppingEmissions:
 
 
 class TestWasteEmissions:
+    """Docstring for class TestWasteEmissions."""
     def test_recycling_reduces_emissions(self):
         """Recycling always should produce less emissions than never recycling."""
         always = WasteInput(recycling_habit="always", weekly_waste_kg=10.0)
@@ -157,6 +162,7 @@ class TestWasteEmissions:
 
 
 class TestTotalEmissions:
+    """Docstring for class TestTotalEmissions."""
     def test_total_emissions_sum_of_categories(self):
         """Total monthly should equal sum of all category emissions."""
         transport = TransportInput(
@@ -188,6 +194,7 @@ class TestTotalEmissions:
 
 
 class TestSustainabilityScore:
+    """Docstring for class TestSustainabilityScore."""
     def test_sustainability_score_range_0_to_100(self):
         """Score should always be between 0 and 100."""
         for emissions in [0, 500, 1000, 1900, 3800, 10000]:
@@ -216,6 +223,7 @@ class TestSustainabilityScore:
 
 
 class TestZeroEmissionsEdgeCase:
+    """Docstring for class TestZeroEmissionsEdgeCase."""
     def test_zero_emissions_edge_case(self):
         """All-zero input should produce zero emissions across all categories."""
         result = calculate_all_emissions(
@@ -248,6 +256,7 @@ class TestZeroEmissionsEdgeCase:
 
 
 class TestHighestCategory:
+    """Docstring for class TestHighestCategory."""
     def test_highest_category_identified_correctly(self):
         """Should correctly identify the highest emission category."""
         from services.carbon_engine import EmissionResult

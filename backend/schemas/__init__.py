@@ -1,1 +1,3 @@
-# EcoMentor AI Backend Package
+"""
+Pydantic validation schemas package for EcoMentor AI.
+"""
