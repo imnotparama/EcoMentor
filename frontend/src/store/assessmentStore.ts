@@ -32,13 +32,13 @@ interface AssessmentState {
 const initialState = {
   currentStep: 0,
   transport: {
-    daily_distance_km: 0,
+    daily_distance_km: undefined,
     vehicle_type: '',
     fuel_type: 'none',
     public_transport_days_per_week: 0,
   },
   energy: {
-    monthly_electricity_kwh: 0,
+    monthly_electricity_kwh: undefined,
     daily_ac_hours: 0,
     renewable_energy: '',
   },

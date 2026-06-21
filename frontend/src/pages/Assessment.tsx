@@ -57,7 +57,10 @@ function TransportStep() {
           max={2000}
           placeholder="e.g. 15"
           value={transport.daily_distance_km ?? ''}
-          onChange={(e) => setTransport({ daily_distance_km: parseFloat(e.target.value) || 0 })}
+          onChange={(e) => {
+            const val = e.target.value;
+            setTransport({ daily_distance_km: val === '' ? undefined : (parseFloat(val) ?? 0) });
+          }}
         />
       </div>
 
@@ -141,7 +144,10 @@ function EnergyStep() {
           min={0}
           placeholder="e.g. 150"
           value={energy.monthly_electricity_kwh ?? ''}
-          onChange={(e) => setEnergy({ monthly_electricity_kwh: parseFloat(e.target.value) || 0 })}
+          onChange={(e) => {
+            const val = e.target.value;
+            setEnergy({ monthly_electricity_kwh: val === '' ? undefined : (parseFloat(val) ?? 0) });
+          }}
         />
         <span className="form-hint">Check your electricity bill (usually in kWh or units)</span>
       </div>
@@ -398,11 +404,23 @@ export default function Assessment() {
 
       const stepData: Record<string, unknown> = {}
 
-      if (stepKey === 'transport') stepData.transport = transport
-      else if (stepKey === 'energy') stepData.energy = energy
-      else if (stepKey === 'food') stepData.food = food
-      else if (stepKey === 'shopping') stepData.shopping = shopping
-      else if (stepKey === 'waste') stepData.waste = waste
+      if (stepKey === 'transport') {
+        stepData.transport = {
+          ...transport,
+          daily_distance_km: transport.daily_distance_km ?? 0,
+        }
+      } else if (stepKey === 'energy') {
+        stepData.energy = {
+          ...energy,
+          monthly_electricity_kwh: energy.monthly_electricity_kwh ?? 0,
+        }
+      } else if (stepKey === 'food') {
+        stepData.food = food
+      } else if (stepKey === 'shopping') {
+        stepData.shopping = shopping
+      } else if (stepKey === 'waste') {
+        stepData.waste = waste
+      }
 
       await assessmentApi.saveStep(stepData as Parameters<typeof assessmentApi.saveStep>[0])
 
