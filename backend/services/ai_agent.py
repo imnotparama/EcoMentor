@@ -391,7 +391,7 @@ async def run_agent_loop(
         tools = [get_user_assessment, get_emission_benchmarks, get_progress_history, generate_challenge]
 
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-2.5-flash",
             generation_config={"temperature": 0.2},
             system_instruction=SYSTEM_PROMPT,
             tools=tools
@@ -402,8 +402,8 @@ async def run_agent_loop(
             role = "model" if msg["role"] == "assistant" else "user"
             gemini_history.append({"role": role, "parts": [msg["content"]]})
 
-        chat = model.start_chat(history=gemini_history)
-        response = chat.send_message(user_message, enable_automatic_function_calling=True)
+        chat = model.start_chat(history=gemini_history, enable_automatic_function_calling=True)
+        response = chat.send_message(user_message)
 
         tools_called = []
         for history in chat.history:
