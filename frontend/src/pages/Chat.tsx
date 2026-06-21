@@ -3,6 +3,7 @@ import { Send, Bot, User, Trash2, Sparkles } from 'lucide-react'
 import { useChat } from '@/hooks/useChat'
 import AgentThinkingPanel from '@/components/AgentThinkingPanel'
 import ReactMarkdown from 'react-markdown'
+import { motion } from 'framer-motion'
 
 const SUGGESTED_PROMPTS = [
   "What's my biggest carbon contributor?",
@@ -197,7 +198,10 @@ export default function Chat() {
         {/* Actual messages */}
         {messages.map((msg, idx) => (
           <div key={msg.id}>
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
               style={{
                 display: 'flex',
                 justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
@@ -246,7 +250,7 @@ export default function Chat() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Agent thinking panel after last assistant message */}
             {msg.role === 'assistant' && idx === messages.length - 1 && lastToolsCalled.length > 0 && (
@@ -299,7 +303,9 @@ export default function Chat() {
               style={{ resize: 'none', paddingRight: '1rem', minHeight: 60, maxHeight: 160 }}
             />
           </div>
-          <button
+          <motion.button
+            whileHover={!input.trim() || isSending ? undefined : { scale: 1.03 }}
+            whileTap={!input.trim() || isSending ? undefined : { scale: 0.97 }}
             onClick={handleSend}
             disabled={!input.trim() || isSending}
             className="btn btn-primary"
@@ -312,7 +318,7 @@ export default function Chat() {
             ) : (
               <Send size={18} />
             )}
-          </button>
+          </motion.button>
         </div>
         <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem', display: 'flex', justifyContent: 'space-between' }}>
           <span>Press Enter to send, Shift+Enter for new line</span>

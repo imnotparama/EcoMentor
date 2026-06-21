@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import { Leaf, Zap, MessageSquare, TrendingUp, Trophy, Shield, ArrowRight, Bot, Cpu, CheckCircle2, ChevronRight } from 'lucide-react'
 import CarbonHalo from '@/components/profile/CarbonHalo'
 import ParticleBackground from '@/components/ParticleBackground'
+import { motion } from 'framer-motion'
+
+const MotionLink = motion(Link)
 
 const features = [
   {
@@ -200,7 +203,7 @@ export default function Landing() {
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <Link to="/login" className="btn btn-secondary btn-sm" id="nav-login">Sign In</Link>
-            <Link to="/register" className="btn btn-primary btn-sm" id="nav-register">Get Started</Link>
+            <MotionLink to="/register" className="btn btn-primary btn-sm" id="nav-register" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>Get Started</MotionLink>
           </div>
         </div>
       </nav>
@@ -248,10 +251,10 @@ export default function Landing() {
           </p>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link to="/register" className="btn btn-primary btn-lg" id="cta-register">
+            <MotionLink to="/register" className="btn btn-primary btn-lg" id="cta-register" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               Start Your Assessment
               <ArrowRight size={18} />
-            </Link>
+            </MotionLink>
             <Link to="/login" className="btn btn-secondary btn-lg" id="cta-login">
               Sign In
             </Link>
@@ -387,10 +390,10 @@ export default function Landing() {
                 </div>
               ))}
             </div>
-            <Link to="/register" className="btn btn-primary btn-lg" id="cta-agentic">
+            <MotionLink to="/register" className="btn btn-primary btn-lg" id="cta-agentic" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               Try It Free
               <ArrowRight size={18} />
-            </Link>
+            </MotionLink>
           </div>
 
           {/* Live demo animation */}
@@ -480,10 +483,10 @@ export default function Landing() {
             ))}
           </div>
           <div style={{ marginTop: '3rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-            <Link to="/register" className="btn btn-primary btn-lg" id="cta-bottom">
+            <MotionLink to="/register" className="btn btn-primary btn-lg" id="cta-bottom" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               Start Free Now
               <ChevronRight size={18} />
-            </Link>
+            </MotionLink>
           </div>
         </div>
       </section>

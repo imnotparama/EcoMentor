@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Car, Zap, Leaf, ShoppingBag, Trash2, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react'
 import { assessmentApi } from '@/api/assessment'
 import { useAssessmentStore } from '@/store/assessmentStore'
+import { motion } from 'framer-motion'
 
 const STEPS = [
   { id: 'transport', label: 'Transport', icon: Car, color: '#58A6FF' },
@@ -494,7 +495,9 @@ export default function Assessment() {
                 Back
               </button>
             )}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               className="btn btn-primary"
               onClick={handleNext}
               disabled={isSaving || isSubmitting}
@@ -510,7 +513,7 @@ export default function Assessment() {
                   {!isLastStep && <ArrowRight size={16} />}
                 </>
               )}
-            </button>
+            </motion.button>
           </div>
         </div>
 

@@ -17,6 +17,7 @@ interface ChallengeCardProps {
 
 export default function ChallengeCard({ challenge, onComplete }: ChallengeCardProps) {
   const [completing, setCompleting] = useState(false)
+  const [showCelebration, setShowCelebration] = useState(false)
   const category = challenge.category as keyof typeof categoryConfig
   const config = categoryConfig[category] || categoryConfig.energy
   const Icon = config.icon
@@ -26,6 +27,8 @@ export default function ChallengeCard({ challenge, onComplete }: ChallengeCardPr
     setCompleting(true)
     try {
       await onComplete(challenge.id)
+      setShowCelebration(true)
+      setTimeout(() => setShowCelebration(false), 800)
     } finally {
       setCompleting(false)
     }
@@ -33,6 +36,7 @@ export default function ChallengeCard({ challenge, onComplete }: ChallengeCardPr
 
   return (
     <div
+      className={showCelebration ? 'celebrating-card' : ''}
       style={{
         background: challenge.completed ? 'rgba(63,185,80,0.04)' : 'var(--surface-2)',
         border: `1px solid ${challenge.completed ? 'rgba(63,185,80,0.4)' : config.border}`,
@@ -152,6 +156,43 @@ export default function ChallengeCard({ challenge, onComplete }: ChallengeCardPr
           </span>
         )}
       </div>
+
+      {showCelebration && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          fontSize: '2.5rem',
+          pointerEvents: 'none',
+          zIndex: 10,
+          animation: 'emoji-burst 0.7s forwards',
+          display: 'flex',
+          gap: '0.5rem',
+        }}>
+          <span>🎉</span>
+          <span>🌿</span>
+          <span>🌟</span>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes scale-pulse {
+          0% { transform: scale(1); }
+          30% { transform: scale(1.04); border-color: #3FB950; box-shadow: 0 0 20px rgba(63, 185, 80, 0.4); }
+          60% { transform: scale(0.98); }
+          100% { transform: scale(1); }
+        }
+        @keyframes emoji-burst {
+          0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+          30% { transform: translate(-50%, -80%) scale(1.8) rotate(15deg); opacity: 1; }
+          80% { transform: translate(-50%, -100%) scale(1.5) rotate(-15deg); opacity: 1; }
+          100% { transform: translate(-50%, -120%) scale(0) rotate(0deg); opacity: 0; }
+        }
+        .celebrating-card {
+          animation: scale-pulse 0.7s ease-in-out;
+        }
+      `}</style>
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useAuthStore } from '@/store/authStore'
 import AppShell from '@/components/layout/AppShell'
 
@@ -13,24 +14,42 @@ import Progress from '@/pages/Progress'
 import Challenges from '@/pages/Challenges'
 import Settings from '@/pages/Settings'
 
+function PageTransitionWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.2 }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
   if (!isAuthenticated) return <Navigate to="/login" replace />
-  return <AppShell>{children}</AppShell>
+  return <AppShell><PageTransitionWrapper>{children}</PageTransitionWrapper></AppShell>
 }
 
 function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
   if (isAuthenticated) return <Navigate to="/dashboard" replace />
-  return <>{children}</>
+  return <PublicOnlyRouteWrapper>{children}</PublicOnlyRouteWrapper>
 }
 
-export default function App() {
+function PublicOnlyRouteWrapper({ children }: { children: React.ReactNode }) {
+  return <PageTransitionWrapper>{children}</PageTransitionWrapper>
+}
+
+function AnimatedRoutes() {
+  const location = useLocation()
   return (
-    <BrowserRouter>
-      <Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         {/* Public routes */}
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<PageTransitionWrapper><Landing /></PageTransitionWrapper>} />
         <Route path="/login" element={<PublicOnlyRoute><AuthPage mode="login" /></PublicOnlyRoute>} />
         <Route path="/register" element={<PublicOnlyRoute><AuthPage mode="register" /></PublicOnlyRoute>} />
 
@@ -46,6 +65,14 @@ export default function App() {
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </AnimatePresence>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AnimatedRoutes />
     </BrowserRouter>
   )
 }

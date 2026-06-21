@@ -6,6 +6,19 @@
 
 ---
 
+## 🎯 Chosen Vertical & Persona
+**Vertical:** Personal Sustainability / Eco-Coaching Assistant
+**Persona:** An eco-conscious urban Indian individual who wants to understand their carbon footprint and take concrete, affordable action — without needing climate-science expertise.
+
+**Why this vertical:** Personal sustainability in India is highly critical yet underserved. With rapid urbanization and India's grid carbon intensity (CEA 2023 grid emission factor is 0.82 kg CO₂/kWh), small household behavioral shifts in energy, transportation, and waste yield high-impact carbon reductions when guided by localized data.
+
+## 🧠 Approach & Logic
+EcoMentor AI is a true agentic assistant, not a static chatbot: Claude autonomously decides which of 4 tools to call based on conversational context (see "What Makes This Agentic" below), grounding every recommendation in the user's real assessment data rather than generic advice. 
+
+**Decision Logic:** When a user completes their assessment, the application automatically flags their highest emission category (e.g., transport, energy, food, shopping, or waste) and prompts the agentic loop to suggest targeted challenges.
+
+---
+
 ## 🏆 Submission Criteria Compliance
 
 | Criterion | Implementation |
@@ -288,8 +301,11 @@ pytest tests/ -v
 ---
 
 ## 📸 Screenshots
+### 📊 Sustainability Dashboard
+![Sustainability Dashboard](screenshots/dashboard.png)
 
-*[Add screenshots after deployment]*
+### 💬 AI Agentic Coach Chat (Grounding with Tool Calls)
+![AI Agentic Coach Chat](screenshots/chat.png)
 
 ---
 

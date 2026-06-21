@@ -14,6 +14,7 @@ import GoalSetter from '@/components/GoalSetter'
 import Co2Equivalents from '@/components/Co2Equivalents'
 import { challengesApi } from '@/api/challenges'
 import ReactMarkdown from 'react-markdown'
+import { motion } from 'framer-motion'
 
 const categoryConfig = {
   transport: { icon: Car, color: '#58A6FF', label: 'Transport' },
@@ -21,6 +22,21 @@ const categoryConfig = {
   food: { icon: Leaf, color: '#3FB950', label: 'Food' },
   shopping: { icon: ShoppingBag, color: '#BC8CFF', label: 'Shopping' },
   waste: { icon: Trash2, color: '#F85149', label: 'Waste' },
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } }
 }
 
 function EmptyState() {
@@ -142,16 +158,26 @@ export default function Dashboard() {
       ) : (
         <div style={{ display: 'grid', gap: '1.5rem' }}>
           {/* Top row: Score card + Benchmarks + Goal */}
-          <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr 240px', gap: '1.5rem', alignItems: 'start' }} className="top-grid">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            style={{ display: 'grid', gridTemplateColumns: '280px 1fr 240px', gap: '1.5rem', alignItems: 'start' }}
+            className="top-grid"
+          >
             {/* Score Card */}
-            <div className="card scale-hover" style={{
-              padding: '2rem',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '1.25rem',
-              boxShadow: '0 0 30px rgba(63,185,80,0.08)',
-            }}>
+            <motion.div
+              variants={itemVariants}
+              className="card scale-hover"
+              style={{
+                padding: '2rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '1.25rem',
+                boxShadow: '0 0 30px rgba(63,185,80,0.08)',
+              }}
+            >
               <CarbonHalo score={score} size={170} animated />
 
               <div style={{ textAlign: 'center', width: '100%' }}>
@@ -175,10 +201,13 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Benchmark comparison + Category breakdown */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <motion.div
+              variants={itemVariants}
+              style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+            >
               {[
                 {
                   label: 'vs. India Average',
@@ -264,14 +293,17 @@ export default function Dashboard() {
                   })}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Right column: Goal + CO2 Equivalents */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <motion.div
+              variants={itemVariants}
+              style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+            >
               <GoalSetter currentMonthly={monthly} />
               <Co2Equivalents monthlyKg={monthly} />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Charts row */}
           {hasData && (
